@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6654B3771F9D4A42007EE525 /* manage_file.c in Sources */ = {isa = PBXBuildFile; fileRef = 6654B3761F9D4A42007EE525 /* manage_file.c */; };
+		6654B3791F9D4A6C007EE525 /* manage_database.c in Sources */ = {isa = PBXBuildFile; fileRef = 6654B3781F9D4A6C007EE525 /* manage_database.c */; };
 		667BDAD21F9CE1A5009B818D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 667BDAD11F9CE1A5009B818D /* main.c */; };
 /* End PBXBuildFile section */
 
@@ -23,6 +25,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		6654B3761F9D4A42007EE525 /* manage_file.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = manage_file.c; sourceTree = "<group>"; };
+		6654B3781F9D4A6C007EE525 /* manage_database.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = manage_database.c; sourceTree = "<group>"; };
+		6654B37A1F9D4AAC007EE525 /* manage_file.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = manage_file.h; sourceTree = "<group>"; };
+		6654B37B1F9D4ABC007EE525 /* manage_database.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = manage_database.h; sourceTree = "<group>"; };
 		667BDACE1F9CE1A5009B818D /* yaml_db */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = yaml_db; sourceTree = BUILT_PRODUCTS_DIR; };
 		667BDAD11F9CE1A5009B818D /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		667BDAE01F9CE21B009B818D /* .gitkeep */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
@@ -31,8 +37,6 @@
 		667BDAE31F9CE24A009B818D /* .gitkeep */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
 		667BDAE41F9CE255009B818D /* .gitkeep */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
 		667BDAE51F9CE25F009B818D /* .gitkeep */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
-		667BDAE61F9CE269009B818D /* .gitkeep */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
-		667BDAE71F9CE274009B818D /* .gitkeep */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
 		667BDAE81F9CE51A009B818D /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		667BDAE91F9CE59B009B818D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -85,7 +89,8 @@
 			isa = PBXGroup;
 			children = (
 				667BDAD11F9CE1A5009B818D /* main.c */,
-				667BDAE71F9CE274009B818D /* .gitkeep */,
+				6654B3761F9D4A42007EE525 /* manage_file.c */,
+				6654B3781F9D4A6C007EE525 /* manage_database.c */,
 			);
 			path = sources;
 			sourceTree = "<group>";
@@ -93,7 +98,8 @@
 		667BDAD91F9CE1B9009B818D /* headers */ = {
 			isa = PBXGroup;
 			children = (
-				667BDAE61F9CE269009B818D /* .gitkeep */,
+				6654B37A1F9D4AAC007EE525 /* manage_file.h */,
+				6654B37B1F9D4ABC007EE525 /* manage_database.h */,
 			);
 			path = headers;
 			sourceTree = "<group>";
@@ -203,6 +209,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6654B3771F9D4A42007EE525 /* manage_file.c in Sources */,
+				6654B3791F9D4A6C007EE525 /* manage_database.c in Sources */,
 				667BDAD21F9CE1A5009B818D /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
