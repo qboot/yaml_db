@@ -4,3 +4,9 @@ profile
 
 # Xcode
 xcuserdata
+
+# Generated databases
+databases
+
+# Keep directories
+!.gitkeep
