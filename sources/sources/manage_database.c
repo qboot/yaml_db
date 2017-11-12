@@ -7,10 +7,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "../headers/config.h"
 #include "../headers/manage_database.h"
 #include "../headers/manage_file.h"
-
-#define TAB "    "
 
 //
 // Create a new database
@@ -18,7 +17,7 @@
 void createDatabase(const char *manager, const char *name)
 {
     // if database already exists, stop here
-    if (findMatchingLine(manager, name) != 0) {
+    if (hasDatabase(manager, name) != 0) {
         return;
     }
     
@@ -43,7 +42,7 @@ void createDatabase(const char *manager, const char *name)
 //
 void dropDatabase(const char *manager, const char *name)
 {
-    int lineNumber = findMatchingLine(manager, name);
+    int lineNumber = hasDatabase(manager, name);
     
     // if database doesn't exist, stop here
     if (lineNumber == 0) {
@@ -51,5 +50,13 @@ void dropDatabase(const char *manager, const char *name)
     }
     
     removeFile(name);
-    removeMatchingLine(manager, lineNumber);
+    removeLine(manager, lineNumber);
+}
+
+//
+// Check if manager has a database named `name`
+//
+int hasDatabase(const char *manager, const char *name)
+{
+    return hasProperty(manager, name);
 }

@@ -8,10 +8,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../headers/config.h"
 #include "../headers/manage_file.h"
 #include "../headers/manage_database.h"
-
-#define DB_FILENAME "databases"
 
 int main(int argc, const char *argv[])
 {

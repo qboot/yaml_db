@@ -8,10 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../headers/config.h"
 #include "../headers/manage_file.h"
-
-#define STRING_SIZE 255
-#define DB_PATH "databases/"
 
 //
 // Create a file named `filename` and write its first line
@@ -21,7 +19,7 @@ void createFile(const char *filename)
     char *path = createPath(filename);
     
     // file already exists, stop here
-    if (fileExists(path)) {
+    if (isFile(path)) {
         free(path);
         return;
     }
@@ -65,7 +63,7 @@ char* createPath(const char *filename)
 // Check if a file exists
 // Return 1 if exists, else 0
 //
-int fileExists(const char *filename)
+int isFile(const char *filename)
 {
     FILE *file = fopen(filename, "r");
     
@@ -98,10 +96,10 @@ int isValidName(const char *name)
 }
 
 //
-// Find if query name exists in file
-// Return line number if found, else 0
+// Check if a file which contains only a YAML sequence has a specific property
+// Return property line number if yes, else 0
 //
-int findMatchingLine(const char *filename, const char *query)
+int hasProperty(const char *filename, const char *property)
 {
     FILE *file = fopen(filename, "r");
     
@@ -114,6 +112,16 @@ int findMatchingLine(const char *filename, const char *query)
     char line[STRING_SIZE] = "";
     
     while (fgets(line, STRING_SIZE, file) != NULL) {
+        
+        // get the 6 first characters + null terminator `\0`
+        char beginning[7] = "";
+        strncpy(beginning, line, 6);
+        
+        if (strcmp(beginning, TAB "- ") != 0) {
+            ++pos;
+            continue;
+        }
+        
         char stripedLine[STRING_SIZE] = "";
         int i = 0;
         int j = 0;
@@ -123,11 +131,15 @@ int findMatchingLine(const char *filename, const char *query)
                 continue;
             }
             
+            if (line[i] == '#') {
+                break;
+            }
+            
             stripedLine[j] = line[i];
             ++j;
         }
         
-        if (strcmp(stripedLine, query) == 0) {
+        if (strcmp(stripedLine, property) == 0) {
             return pos;
         }
         
@@ -141,7 +153,7 @@ int findMatchingLine(const char *filename, const char *query)
 //
 // Remove a specific line in a file
 //
-void removeMatchingLine(const char *filename, int lineNumber)
+void removeLine(const char *filename, int lineNumber)
 {
     char newFilename[STRING_SIZE] = "";
     strcpy(newFilename, filename);
@@ -181,7 +193,7 @@ void removeFile(const char *filename)
     char *path = createPath(filename);
     
     // file doesn't exist, stop here
-    if (fileExists(path) == 0) {
+    if (isFile(path) == 0) {
         free(path);
         return;
     }

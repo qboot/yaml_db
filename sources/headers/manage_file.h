@@ -10,10 +10,10 @@
 
 void createFile(const char *filename);
 char* createPath(const char *filename);
-int fileExists(const char *filename);
+int isFile(const char *filename);
 int isValidName(const char *name);
-int findMatchingLine(const char *filename, const char *query);
-void removeMatchingLine(const char *filename, int lineNumber);
+int hasProperty(const char *filename, const char *property);
+void removeLine(const char *filename, int lineNumber);
 void removeFile(const char *filename);
 
 #endif
