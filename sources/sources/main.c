@@ -16,8 +16,7 @@
 int main(int argc, const char *argv[])
 {
     char *manager = DB_FILENAME;
-    char *managerPath = createFilePath(manager);
-    createFile(manager);
+    char *managerPath = createFile(manager);
     
     char *base1 = "base1";
     char *base2 = "base2";
@@ -26,6 +25,15 @@ int main(int argc, const char *argv[])
     createDatabase(managerPath, base1);
     createDatabase(managerPath, base2);
     createTable(base2, table1);
+    
+    Column col = {0};
+    col.name = "id";
+    col.type = "int";
+    col.notNull = 1;
+    col.primaryKey = 1;
+    col.autoIncrement = 1;
+    
+    createColumn(base2, table1, col);
     
     dropDatabase(managerPath, base1);
     

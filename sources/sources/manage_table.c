@@ -13,6 +13,8 @@
 #include "../headers/manage_file.h"
 #include "../headers/manage_table.h"
 
+static void generateDefaultTableContent(const char *table);
+
 //
 // Create a new table
 //
@@ -26,7 +28,7 @@ void createTable(const char *database, const char *name)
         return;
     }
     
-    createFileInDir(name, database);
+    char *tablePath = createFileInDir(name, database);
     
     char *databasePath = createFilePath(database);
     
@@ -44,6 +46,9 @@ void createTable(const char *database, const char *name)
     fputs("\n", file);
     fclose(file);
     free(databasePath);
+    
+    generateDefaultTableContent(tablePath);
+    free(tablePath);
 }
 
 //
@@ -58,11 +63,54 @@ int hasTable(const char *database, const char *name)
     return hasTable;
 }
 
+//
+// Write default struct and data keys in table file
+//
+static void generateDefaultTableContent(const char *table)
+{
+    FILE *file = fopen(table, "a");
+    
+    fputs(TAB "struct: ~\n", file);
+    fputs(TAB "data: ~\n", file);
+    fclose(file);
+}
+
+//
+// Create a new column
+//
+void createColumn(const char *database, const char *table, const Column col)
+{
+    char *tablePath = createFileInDirPath(table, database);
+    // has column ?
+    // find good pos in file
+    
+    // name and type are required
+    
+    if (col.name != NULL) {
+        printf("%s\n", col.name);
+    }
+    
+    free(tablePath);
+}
+
+//
+// Check if table has a column named `name`
+//
+int hasColumn(const char *table, const char *name)
+{
+    // will not work
+    return hasProperty(table, name);
+}
+
+
+// addLine in manage_file file, pos, content
+
 // TODO
 
 // update createTable() function with columns argument
-// write struct: ~ and data: ~
 // createColumn(Column col)
 // dropTable()
 // hasColumn()
 // dropColumn()
+// check type Validity
+// id type should be create and table file creation + it's a reserved name keyword

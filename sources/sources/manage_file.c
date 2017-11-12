@@ -15,11 +15,14 @@
 #include "../headers/config.h"
 #include "../headers/manage_file.h"
 
+static char* createPath(const char *name, const int isFile);
+static char* generateFile(const char *filepath, const char *filename);
+
 //
 // Create a path `databases/name` for a given `name`
 // Return a fullpath (root + name)
 //
-char* createPath(const char *name, const int isFile)
+static char* createPath(const char *name, const int isFile)
 {
     char path[STRING_SIZE] = DB_PATH;
     strcat(path, name);
@@ -53,16 +56,30 @@ char* createDirPath(const char *dirname)
 }
 
 //
-// Generate a file named `filename` and write its first line
+// Create a path `databases/dirname/filename.yml` for a given `dirname` and `filename`
+// Return a fullpath (root + dirname + filename + extension)
 //
-void generateFile(const char *filename, const char *name)
+char* createFileInDirPath(const char *filename, const char *dirname)
 {
-    char *path = createFilePath(filename);
+    char path[STRING_SIZE] = "";
+    strcat(path, dirname);
+    strcat(path, "/");
+    strcat(path, filename);
+    
+    return createPath(path, 1);
+}
+
+//
+// Generate a file named `filename` and write its first line
+// Return a fullpath (root + filename + extension)
+//
+static char* generateFile(const char *filepath, const char *filename)
+{
+    char *path = (char*) filepath;
     
     // file already exists, stop here
     if (isFile(path)) {
-        free(path);
-        return;
+        return path;
     }
     
     FILE *file = fopen(path, "w");
@@ -73,15 +90,16 @@ void generateFile(const char *filename, const char *name)
         exit(EXIT_FAILURE);
     }
     
-    fprintf(file, "%s:\n", name);
+    fprintf(file, "%s:\n", filename);
     fclose(file);
-    free(path);
+    return path;
 }
 
 //
 // Create a file named `filename`
+// Return a fullpath (root + filename + extension)
 //
-void createFile(const char *filename)
+char* createFile(const char *filename)
 {
     // filename is not valid, stop here
     if (isValidName(filename) == 0) {
@@ -89,13 +107,15 @@ void createFile(const char *filename)
         exit(EXIT_FAILURE);
     }
     
-    generateFile(filename, filename);
+    char *filepath = createFilePath(filename);
+    return generateFile(filepath, filename);
 }
 
 //
 // Create a file named `filename` in directory `dirname`
+// Return a fullpath (root + dirname + filename + extension)
 //
-void createFileInDir(const char *filename, const char *dirname)
+char* createFileInDir(const char *filename, const char *dirname)
 {
     // filename is not valid, stop here
     if (isValidName(filename) == 0) {
@@ -103,12 +123,8 @@ void createFileInDir(const char *filename, const char *dirname)
         exit(EXIT_FAILURE);
     }
     
-    char path[STRING_SIZE] = "";
-    strcat(path, dirname);
-    strcat(path, "/");
-    strcat(path, filename);
-    
-    generateFile(path, filename);
+    char *filepath = createFileInDirPath(filename, dirname);
+    return generateFile(filepath, filename);
 }
 
 //

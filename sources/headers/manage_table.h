@@ -9,17 +9,19 @@
 #define MANAGE_TABLE
 
 typedef struct {
-    char name[STRING_SIZE];
-    char type[STRING_SIZE];
+    char *name;
+    char *type;
     int notNull;
     int length;
-    char defaultValue[STRING_SIZE];
+    char *defaultValue;
     int primaryKey;
-    char foreignKey[STRING_SIZE];
+    char *foreignKey;
     int autoIncrement;
 } Column;
 
 void createTable(const char *database, const char *name);
 int hasTable(const char *database, const char *name);
+void createColumn(const char *database, const char *table, const Column col);
+int hasColumn(const char *table, const char *name);
 
 #endif

@@ -21,7 +21,7 @@ void createDatabase(const char *manager, const char *name)
         return;
     }
     
-    createFile(name);
+    char *path = createFile(name);
     createDir(name);
     
     FILE *file = fopen(manager, "a");
@@ -36,6 +36,7 @@ void createDatabase(const char *manager, const char *name)
     fputs(name, file);
     fputs("\n", file);
     fclose(file);
+    free(path);
 }
 
 //
