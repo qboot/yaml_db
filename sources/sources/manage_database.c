@@ -62,3 +62,16 @@ int hasDatabase(const char *manager, const char *name)
 {
     return hasProperty(manager, name);
 }
+
+//
+// Check if a database exists
+// Return 1 if exists, else 0
+//
+int isDatabase(const char *name)
+{
+    char *path = createFilePath(name);
+    int isDatabase = isFile(path);
+    
+    free(path);
+    return isDatabase;
+}

@@ -53,9 +53,9 @@ char* createDirPath(const char *dirname)
 }
 
 //
-// Create a file named `filename` and write its first line
+// Generate a file named `filename` and write its first line
 //
-void createFile(const char *filename)
+void generateFile(const char *filename, const char *name)
 {
     char *path = createFilePath(filename);
     
@@ -63,13 +63,6 @@ void createFile(const char *filename)
     if (isFile(path)) {
         free(path);
         return;
-    }
-    
-    // filename is not valid, stop here
-    if (isValidName(filename) == 0) {
-        free(path);
-        printf("Name should only contain 0-9 a-z A-Z and _ characters.\n");
-        exit(EXIT_FAILURE);
     }
     
     FILE *file = fopen(path, "w");
@@ -80,9 +73,42 @@ void createFile(const char *filename)
         exit(EXIT_FAILURE);
     }
     
-    fprintf(file, "%s:\n", filename);
+    fprintf(file, "%s:\n", name);
     fclose(file);
     free(path);
+}
+
+//
+// Create a file named `filename`
+//
+void createFile(const char *filename)
+{
+    // filename is not valid, stop here
+    if (isValidName(filename) == 0) {
+        printf("Name should only contain 0-9 a-z A-Z and _ characters.\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    generateFile(filename, filename);
+}
+
+//
+// Create a file named `filename` in directory `dirname`
+//
+void createFileInDir(const char *filename, const char *dirname)
+{
+    // filename is not valid, stop here
+    if (isValidName(filename) == 0) {
+        printf("Name should only contain 0-9 a-z A-Z and _ characters.\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    char path[STRING_SIZE] = "";
+    strcat(path, dirname);
+    strcat(path, "/");
+    strcat(path, filename);
+    
+    generateFile(path, filename);
 }
 
 //

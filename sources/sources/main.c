@@ -11,6 +11,7 @@
 #include "../headers/config.h"
 #include "../headers/manage_file.h"
 #include "../headers/manage_database.h"
+#include "../headers/manage_table.h"
 
 int main(int argc, const char *argv[])
 {
@@ -18,12 +19,15 @@ int main(int argc, const char *argv[])
     char *managerPath = createFilePath(manager);
     createFile(manager);
     
-    char *name1 = "base1";
-    char *name2 = "base2";
-    createDatabase(managerPath, name1);
-    createDatabase(managerPath, name2);
+    char *base1 = "base1";
+    char *base2 = "base2";
+    char *table1 = "table1";
     
-    dropDatabase(managerPath, name1);
+    createDatabase(managerPath, base1);
+    createDatabase(managerPath, base2);
+    createTable(base2, table1);
+    
+    dropDatabase(managerPath, base1);
     
     free(managerPath);
     return 0;

@@ -11,7 +11,9 @@
 char* createPath(const char *name, const int isFile);
 char* createFilePath(const char *filename);
 char* createDirPath(const char *dirname);
+void generateFile(const char *filename, const char *name);
 void createFile(const char *filename);
+void createFileInDir(const char *filename, const char *dirname);
 void removeFile(const char *filename);
 int isFile(const char *filename);
 void createDir(const char *dirname);

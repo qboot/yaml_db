@@ -11,5 +11,6 @@
 void createDatabase(const char *manager, const char *name);
 void dropDatabase(const char *manager, const char *name);
 int hasDatabase(const char *manager, const char *name);
+int isDatabase(const char *name);
 
 #endif
