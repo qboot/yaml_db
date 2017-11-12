@@ -1,0 +1,31 @@
+location:
+    struct:
+        id:
+            type: int
+            not_null: true
+            primary_key: true
+            auto_increment: true
+        name:
+            type: string
+            not_null: true
+            length: 80
+        latitude:
+            type: float
+            not_null: true
+            default: 0.0
+        longitude:
+            type: float
+            not_null: true
+            default: 0.0
+        address:
+            type: string
+            length: 200
+        city:
+            type: string
+            length: 40
+        country:
+            type: string
+            length: 40
+    data:
+        - [0, "ESGI", 48.8491701, 2.3875456, "242 Rue du Faubourg Saint-Antoine", "Paris", "France"]
+        - [1, "Google", 37.4133865, -122.1162864, "Googleplex", "Mountain View", "United States"]

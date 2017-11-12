@@ -6,7 +6,7 @@ profile
 xcuserdata
 
 # Generated databases
-databases
+/databases
 
 # Keep directories
 !.gitkeep

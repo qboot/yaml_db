@@ -1,0 +1,20 @@
+# this file is a representation of a table
+# it MUST begin with the table name, here `table_name`
+# it MUST contain a `struct` key defining the structure
+# it MUST contain a `data` key storing all data
+
+table_name:
+    struct:
+        column_name:
+            type: int|float|char|string # required
+            not_null: true|false # optional
+            length: ~ # optional
+            default: ~ # optional
+            primary_key: true|false # optional
+            foreign_key: "foreign_table_name" # optional, take column `id` as reference
+            auto_increment: true|false # optional
+        # ...
+    data:
+        # one line per record beginning with a dash
+        - ["value_of_column_name", "..."]
+        # ...
