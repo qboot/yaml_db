@@ -10,6 +10,8 @@
 #include "../headers/manage_database.h"
 #include "../headers/manage_file.h"
 
+#define TAB "    "
+
 //
 // Create a new database
 //
@@ -29,7 +31,8 @@ void createDatabase(const char *manager, const char *name)
         exit(EXIT_FAILURE);
     }
     
-    fputs("\t- ", file);
+    fputs(TAB, file);
+    fputs("- ", file);
     fputs(name, file);
     fputs("\n", file);
     fclose(file);

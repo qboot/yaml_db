@@ -27,7 +27,7 @@ void createFile(const char *filename)
     }
     
     // filename is not valid, stop here
-    if (isValidFilename(filename) == 0) {
+    if (isValidName(filename) == 0) {
         free(path);
         printf("Name should only contain 0-9 a-z A-Z and _ characters.\n");
         exit(EXIT_FAILURE);
@@ -78,18 +78,18 @@ int fileExists(const char *filename)
 }
 
 //
-// Check if given filename is a valid one (0-9 a-z A-Z and _ allowed)
+// Check if given name is a valid one (0-9 a-z A-Z and _ allowed)
 // Return 1 if yes, else 0
 //
-int isValidFilename(const char *filename)
+int isValidName(const char *name)
 {
     int i = 0;
     
-    for (i = 0; i < strlen(filename); ++i) {
-        if (filename[i] != '_' &&
-            !(filename[i] >= 48 && filename[i] <= 57) &&
-            !(filename[i] >= 65 && filename[i] <= 90) &&
-            !(filename[i] >= 97 && filename[i] <= 122)) {
+    for (i = 0; i < strlen(name); ++i) {
+        if (name[i] != '_' &&
+            !(name[i] >= 48 && name[i] <= 57) &&
+            !(name[i] >= 65 && name[i] <= 90) &&
+            !(name[i] >= 97 && name[i] <= 122)) {
             return 0;
         }
     }
@@ -119,7 +119,7 @@ int findMatchingLine(const char *filename, const char *query)
         int j = 0;
         
         for (i = 0; i < strlen(line); ++i) {
-            if (line[i] == '\t' || line[i] == '\n' || line[i] == '-' || line[i] == ' ') {
+            if (line[i] == '\n' || line[i] == '-' || line[i] == ' ') {
                 continue;
             }
             

@@ -11,7 +11,7 @@
 void createFile(const char *filename);
 char* createPath(const char *filename);
 int fileExists(const char *filename);
-int isValidFilename(const char *filename);
+int isValidName(const char *name);
 int findMatchingLine(const char *filename, const char *query);
 void removeMatchingLine(const char *filename, int lineNumber);
 void removeFile(const char *filename);
