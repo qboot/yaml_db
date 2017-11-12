@@ -22,6 +22,7 @@ void createDatabase(const char *manager, const char *name)
     }
     
     createFile(name);
+    createDir(name);
     
     FILE *file = fopen(manager, "a");
     
@@ -50,6 +51,7 @@ void dropDatabase(const char *manager, const char *name)
     }
     
     removeFile(name);
+    removeDir(name);
     removeLine(manager, lineNumber);
 }
 

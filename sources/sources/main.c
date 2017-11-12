@@ -15,7 +15,7 @@
 int main(int argc, const char *argv[])
 {
     char *manager = DB_FILENAME;
-    char *managerPath = createPath(manager);
+    char *managerPath = createFilePath(manager);
     createFile(manager);
     
     char *name1 = "base1";

@@ -8,12 +8,16 @@
 #ifndef MANAGE_FILE
 #define MANAGE_FILE
 
+char* createPath(const char *name, const int isFile);
+char* createFilePath(const char *filename);
+char* createDirPath(const char *dirname);
 void createFile(const char *filename);
-char* createPath(const char *filename);
+void removeFile(const char *filename);
 int isFile(const char *filename);
+void createDir(const char *dirname);
+void removeDir(const char *dirname);
 int isValidName(const char *name);
 int hasProperty(const char *filename, const char *property);
 void removeLine(const char *filename, int lineNumber);
-void removeFile(const char *filename);
 
 #endif

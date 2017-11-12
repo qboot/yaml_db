@@ -8,15 +8,56 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include "../headers/config.h"
 #include "../headers/manage_file.h"
+
+//
+// Create a path `databases/name` for a given `name`
+// Return a fullpath (root + name)
+//
+char* createPath(const char *name, const int isFile)
+{
+    char path[STRING_SIZE] = DB_PATH;
+    strcat(path, name);
+    
+    if (isFile == 1) {
+        strcat(path, ".yml");
+    }
+    
+    char *fullPath = malloc(sizeof(char)*STRING_SIZE);
+    strcpy(fullPath, path);
+    
+    return fullPath;
+}
+
+//
+// Create a path `databases/filename.yml` for a given `filename`
+// Return a fullpath (root + filename + extension)
+//
+char* createFilePath(const char *filename)
+{
+    return createPath(filename, 1);
+}
+
+//
+// Create a path `databases/dirname` for a given `dirname`
+// Return a fullpath (root + dirname)
+//
+char* createDirPath(const char *dirname)
+{
+    return createPath(dirname, 0);
+}
 
 //
 // Create a file named `filename` and write its first line
 //
 void createFile(const char *filename)
 {
-    char *path = createPath(filename);
+    char *path = createFilePath(filename);
     
     // file already exists, stop here
     if (isFile(path)) {
@@ -34,6 +75,7 @@ void createFile(const char *filename)
     FILE *file = fopen(path, "w");
     
     if (file == NULL) {
+        free(path);
         printf("fopen() failed in file %s at line #%d\n", __FILE__, __LINE__);
         exit(EXIT_FAILURE);
     }
@@ -44,19 +86,20 @@ void createFile(const char *filename)
 }
 
 //
-// Create a path `databases/filename.yml` for a given `filename`
-// Return a fullpath (directory + filename + extension)
+// Remove a file named `filename`
 //
-char* createPath(const char *filename)
+void removeFile(const char *filename)
 {
-    char path[STRING_SIZE] = DB_PATH;
-    strcat(path, filename);
-    strcat(path, ".yml");
+    char *path = createFilePath(filename);
     
-    char *fullPath = malloc(sizeof(char)*STRING_SIZE);
-    strcpy(fullPath, path);
+    // file doesn't exist, stop here
+    if (isFile(path) == 0) {
+        free(path);
+        return;
+    }
     
-    return fullPath;
+    remove(path);
+    free(path);
 }
 
 //
@@ -73,6 +116,62 @@ int isFile(const char *filename)
     }
     
     return 0;
+}
+
+//
+// Create a directory named `dirname`
+//
+void createDir(const char *dirname)
+{
+    char *path = createDirPath(dirname);
+    struct stat st = {0};
+    
+    if (stat(path, &st) == -1) {
+        mkdir(path, 0777);
+    }
+    
+    free(path);
+}
+
+//
+// Remove a directory named `dirname` and all its content
+//
+void removeDir(const char *dirname)
+{
+    char *path = createDirPath(dirname);
+    struct stat st = {0};
+    
+    if (stat(path, &st) == -1) {
+        free(path);
+        return;
+    }
+    
+    DIR *dir = opendir(path);
+    struct dirent *file;
+    
+    if (dir == NULL) {
+        free(path);
+        printf("opendir() failed in file %s at line #%d\n", __FILE__, __LINE__);
+        exit(EXIT_FAILURE);
+    }
+    
+    while ((file = readdir(dir)) != NULL) {
+        
+        if (!strcmp(file->d_name, ".") || !strcmp(file->d_name, "..")) {
+            continue;
+        }
+        
+        char filepath[STRING_SIZE] = "";
+        strcat(filepath, path);
+        strcat(filepath, "/");
+        strcat(filepath, file->d_name);
+        
+        remove(filepath);
+    }
+    
+    closedir(dir);
+    remove(path);
+    free(path);
 }
 
 //
@@ -183,21 +282,4 @@ void removeLine(const char *filename, int lineNumber)
     fclose(newFile);
     remove(filename);
     rename(newFilename, filename);
-}
-
-//
-// Remove a file named `filename`
-//
-void removeFile(const char *filename)
-{
-    char *path = createPath(filename);
-    
-    // file doesn't exist, stop here
-    if (isFile(path) == 0) {
-        free(path);
-        return;
-    }
-    
-    remove(path);
-    free(path);
 }
