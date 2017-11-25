@@ -7,9 +7,24 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include "../headers/config.h"
+#include "../headers/manage_file.h"
+#include "../headers/manage_database.h"
 
-int main(int argc, const char * argv[]) {
-    // insert code here...
-    printf("Hello, World!\n");
+int main(int argc, const char *argv[])
+{
+    char *manager = DB_FILENAME;
+    char *managerPath = createFilePath(manager);
+    createFile(manager);
+    
+    char *name1 = "base1";
+    char *name2 = "base2";
+    createDatabase(managerPath, name1);
+    createDatabase(managerPath, name2);
+    
+    dropDatabase(managerPath, name1);
+    
+    free(managerPath);
     return 0;
 }
