@@ -146,5 +146,3 @@ IntArray searchSpecificData(Table *currentTable, int columnPlace, char *dataSear
     
     return rowNumberList;
 }
-
-

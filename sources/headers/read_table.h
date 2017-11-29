@@ -10,6 +10,7 @@
 #define read_table_h
 
 #include <stdio.h>
+<<<<<<< HEAD
 #include "config.h"
 
 void parseData(StringArray data, Table *currentTable);
@@ -17,5 +18,6 @@ void printResult(Table *currentTable);
 int searchColumnPlace(Table *currentTable, char *columnName);
 IntArray searchSpecificData(Table *currentTable, int columnPlace, char *dataSearched);
 IntArray searchData(Table *currentTable, int columnPlace, char *dataSearched);
+
 #endif
 
