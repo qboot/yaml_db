@@ -13,6 +13,9 @@
 #include "../headers/manage_file.h"
 #include "../headers/manage_array.h"
 #include "../headers/manage_entry.h"
+#include "../headers/manage_database.h"
+#include "../headers/read_table.h"
+#include "../headers/test_read_table.h"
 
 static void entryLoop(void);
 static int isExitCommand(char *command);
