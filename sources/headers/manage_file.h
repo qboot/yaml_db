@@ -8,12 +8,15 @@
 #ifndef MANAGE_FILE
 #define MANAGE_FILE
 
+#include "config.h"
+
 char* createFilePath(const char *filename);
 char* createDirPath(const char *dirname);
 char* createFileInDirPath(const char *filename, const char *dirname);
 char* createFile(const char *filename);
 char* createFileInDir(const char *filename, const char *dirname);
 void removeFile(const char *filename);
+void removeFileInDir(const char *filename, const char *dirname);
 int isFile(const char *filename);
 void createDir(const char *dirname);
 void removeDir(const char *dirname);

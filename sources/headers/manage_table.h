@@ -8,20 +8,15 @@
 #ifndef MANAGE_TABLE
 #define MANAGE_TABLE
 
-typedef struct {
-    char *name;
-    char *type;
-    int notNull;
-    int length;
-    char *defaultValue;
-    int primaryKey;
-    char *foreignKey;
-    int autoIncrement;
-} Column;
+#include "config.h"
 
-void createTable(const char *database, const char *name);
+void createTable(const char *database, const char *name, int nbColumns, const Column *columns);
+void dropTable(const char *database, const char *name);
 int hasTable(const char *database, const char *name);
-void createColumn(const char *database, const char *table, const Column col);
+void createTableStructure(const char *table, int nbColumns, const Column *columns);
 int hasColumn(const char *table, const char *name);
+char** getColumns(const char *table, int *nbColumns);
+void addRows(const char *database, const char *table, const int nbColumns, const char **columns, const int nbRows, const char ***rows);
+void removeDataTilde(const char *table);
 
 #endif

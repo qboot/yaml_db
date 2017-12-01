@@ -12,7 +12,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include "../headers/config.h"
 #include "../headers/manage_file.h"
 
 static char* createPath(const char *name, const int isFile);
@@ -133,6 +132,23 @@ char* createFileInDir(const char *filename, const char *dirname)
 void removeFile(const char *filename)
 {
     char *path = createFilePath(filename);
+    
+    // file doesn't exist, stop here
+    if (isFile(path) == 0) {
+        free(path);
+        return;
+    }
+    
+    remove(path);
+    free(path);
+}
+
+//
+// Remove a file named `filename` in directory `dirname`
+//
+void removeFileInDir(const char *filename, const char *dirname)
+{
+    char *path = createFileInDirPath(filename, dirname);
     
     // file doesn't exist, stop here
     if (isFile(path) == 0) {

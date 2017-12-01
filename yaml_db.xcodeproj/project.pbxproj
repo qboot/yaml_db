@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		66172C101FD3A0290039008F /* manage_array.c in Sources */ = {isa = PBXBuildFile; fileRef = 66172C0F1FD3A0290039008F /* manage_array.c */; };
 		661A35191FB8FE2900CAD23F /* manage_table.c in Sources */ = {isa = PBXBuildFile; fileRef = 661A35181FB8FE2900CAD23F /* manage_table.c */; };
 		6654B3771F9D4A42007EE525 /* manage_file.c in Sources */ = {isa = PBXBuildFile; fileRef = 6654B3761F9D4A42007EE525 /* manage_file.c */; };
 		6654B3791F9D4A6C007EE525 /* manage_database.c in Sources */ = {isa = PBXBuildFile; fileRef = 6654B3781F9D4A6C007EE525 /* manage_database.c */; };
@@ -26,6 +27,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		66172C0F1FD3A0290039008F /* manage_array.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = manage_array.c; sourceTree = "<group>"; };
+		66172C111FD3A0720039008F /* manage_array.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = manage_array.h; sourceTree = "<group>"; };
 		661A35171FB8B14800CAD23F /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		661A35181FB8FE2900CAD23F /* manage_table.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = manage_table.c; sourceTree = "<group>"; };
 		661A351A1FB8FE3B00CAD23F /* manage_table.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = manage_table.h; sourceTree = "<group>"; };
@@ -96,6 +99,7 @@
 				6654B3761F9D4A42007EE525 /* manage_file.c */,
 				6654B3781F9D4A6C007EE525 /* manage_database.c */,
 				661A35181FB8FE2900CAD23F /* manage_table.c */,
+				66172C0F1FD3A0290039008F /* manage_array.c */,
 			);
 			path = sources;
 			sourceTree = "<group>";
@@ -107,6 +111,7 @@
 				6654B37B1F9D4ABC007EE525 /* manage_database.h */,
 				661A35171FB8B14800CAD23F /* config.h */,
 				661A351A1FB8FE3B00CAD23F /* manage_table.h */,
+				66172C111FD3A0720039008F /* manage_array.h */,
 			);
 			path = headers;
 			sourceTree = "<group>";
@@ -220,6 +225,7 @@
 				6654B3791F9D4A6C007EE525 /* manage_database.c in Sources */,
 				667BDAD21F9CE1A5009B818D /* main.c in Sources */,
 				661A35191FB8FE2900CAD23F /* manage_table.c in Sources */,
+				66172C101FD3A0290039008F /* manage_array.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
