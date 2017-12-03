@@ -335,7 +335,6 @@ void removeDataTilde(const char *table)
     replaceLine(table, lineNumber, TAB "data:\n");
 }
 
-// TODO
 void updateRows(
     const char *database,
     const char *table,
@@ -347,7 +346,7 @@ void updateRows(
     const Condition *conditions
 )
 {
-    // get columnNames
+    // get all column names
     char **columnNames = NULL;
     int *size = malloc(sizeof(int));
     columnNames = getColumns(table, size);
@@ -431,6 +430,9 @@ void updateRows(
             replaceLine(table, pos, newLine);
         }
         
+        for (int i = 0; i < *rowSize; ++i) {
+            free(row[i]);
+        }
         free(row);
         free(rowSize);
         
@@ -439,8 +441,108 @@ void updateRows(
     
     fclose(file);
     
+    for (int i = 0; i < *size; ++i) {
+        free(columnNames[i]);
+    }
     free(columnNames);
     free(size);
+}
+
+void deleteRows(const char *database, const char *table, const int nbConditions, const Condition *conditions)
+{
+    // get all column names
+    char **columnNames = NULL;
+    int *size = malloc(sizeof(int));
+    columnNames = getColumns(table, size);
+    
+    // save all rows that should be delete
+    int *rowsToDelete = malloc(ARRAY_CAPACITY * sizeof(int));
+    int *rowsToDeleteSize = malloc(sizeof(int));
+    int *rowsToDeleteCapacity = malloc(sizeof(int));
+    *rowsToDeleteSize = 0;
+    *rowsToDeleteCapacity = ARRAY_CAPACITY;
+    
+    FILE *file = fopen(table, "r");
+    
+    if (file == NULL) {
+        free((char *) table);
+        printf("fopen() failed in file %s at line #%d\n", __FILE__, __LINE__);
+        exit(EXIT_FAILURE);
+    }
+    
+    char line[STRING_SIZE] = "";
+    int pos = 0;
+    int isData = 0;
+    
+    while (fgets(line, STRING_SIZE, file) != NULL) {
+        if (strcmp(line, TAB "data:\n") == 0) {
+            isData = 1;
+            ++pos;
+            continue;
+        }
+        
+        if (!isData) {
+            ++pos;
+            continue;
+        }
+        
+        if (strcmp(line, TAB "data: ~\n") == 0) {
+            break;
+        }
+    
+        // row is array of values for current line
+        int *rowSize = malloc(sizeof(int));
+        char **row = parseRow(line, rowSize);
+        int shouldBeRemove = 0;
+        
+        // check if row is concerned by `where` claused
+        for (int i = 0; i < *size; ++i) {
+            for (int j = 0; j < nbConditions; ++j) {
+                if (strcmp(conditions[j].type, "=") == 0) {
+                    if (strcmp(conditions[j].column, columnNames[i]) == 0) {
+                        if (strcmp(conditions[j].value, row[i]) == 0) {
+                            shouldBeRemove = 1;
+                        } else {
+                            shouldBeRemove = 0;
+                        }
+                    }
+                } else if (strcmp(conditions[i].type, ">") == 0) {
+                    // TODO
+                } else if (strcmp(conditions[i].type, "<") == 0) {
+                    // TODO
+                }
+            }
+        }
+        
+        if (shouldBeRemove) {
+            appendValueToIntArray(rowsToDelete, rowsToDeleteSize, rowsToDeleteCapacity, pos);
+        }
+    
+        for (int i = 0; i < *rowSize; ++i) {
+            free(row[i]);
+        }
+        free(row);
+        free(rowSize);
+        
+        ++pos;
+    }
+    
+    fclose(file);
+    
+    // remove needed rows
+    for (int i = 0; i < *rowsToDeleteSize; ++i) {
+        removeLine(table, rowsToDelete[i]-i);
+    }
+    
+    // free memory
+    for (int i = 0; i < *size; ++i) {
+        free(columnNames[i]);
+    }
+    free(columnNames);
+    free(size);
+    free(rowsToDelete);
+    free(rowsToDeleteSize);
+    free(rowsToDeleteCapacity);
 }
 
 char **parseRow(char *row, int *size)
@@ -489,15 +591,6 @@ char **parseRow(char *row, int *size)
     free(capacity);
     
     return rowToArray;
-}
-
-void deleteRows(
-    const char *database,
-    const char *table,
-    const Condition *conditions
-    )
-{
-    // TODO
 }
 
 // rethink how to save different types, maybe validate them too - low

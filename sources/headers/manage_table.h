@@ -20,5 +20,6 @@ void addRows(const char *database, const char *table, const int nbColumns, const
 void removeDataTilde(const char *table);
 char **parseRow(char *row, int *size);
 void updateRows(const char *database, const char *table, const int nbColumns, const char **columns, const int nbValues, const char **values, const int nbConditions, const Condition *conditions);
+void deleteRows(const char *database, const char *table, const int nbConditions, const Condition *conditions);
 
 #endif

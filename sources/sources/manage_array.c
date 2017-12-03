@@ -90,3 +90,39 @@ char** appendValueToArray(char **array, int *size, int *capacity, char *value)
         return newArray;
     }
 }
+
+//
+// Allocate more space to a given array, depending of size and capacity
+// Return an array of char
+//
+int* manageIntArray(int *array, int *size, int *capacity)
+{
+    *capacity *= 3;
+    
+    int *newArray = malloc(*capacity * sizeof(int));
+    
+    for (int i = 0; i < *size; ++i) {
+        newArray[i] = array[i];
+    }
+    
+    free(array);
+    return newArray;
+}
+
+//
+// Append a value to a given array
+// Return an array of char
+//
+int* appendValueToIntArray(int *array, int *size, int *capacity, int value)
+{
+    if (*size < *capacity) {
+        array[*size] = value;
+        ++(*size);
+        return array;
+    } else {
+        int *newArray = manageIntArray(array, size, capacity);
+        newArray[*size] = value;
+        ++(*size);
+        return newArray;
+    }
+}

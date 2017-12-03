@@ -17,7 +17,7 @@
 #include <ctype.h>
 
 int main(int argc, const char *argv[])
-{
+{    
     char *manager = DB_FILENAME;
     char *managerPath = createFile(manager);
     
@@ -45,21 +45,26 @@ int main(int argc, const char *argv[])
     char columnName[] = "project";
     printf("%d\n", hasColumn("databases/base2/table2.yml", columnName));
     
-    // try to add two rows
+    // add three rows
     const char *columns[] = {"id", "project", "event", "people"};
     Cell cells1[] = {"1", "2", "3", "4"};
     Cell cells2[] = {"a", "b", "c", "d"};
-    const Row rows[] = {{4, cells1}, {4, cells2}};
-    int rowsSize = 2;
+    Cell cells3[] = {"z", "y", "x", "w"};
+    const Row rows[] = {{4, cells1}, {4, cells2}, {4, cells3}};
+    int rowsSize = 3;
     
     addRows("databases/base2.yml", "databases/base2/table2.yml", 4, columns, rowsSize, rows);
     
-    // try to update a row
+    // update a row
     const char *uColumns[] = {"id", "project"};
     const char *uValues[] = {"newId", "newProject"};
     Condition uConditions[] = {{"project", "b", "="}};
     
     updateRows("databases/base2.yml", "databases/base2/table2.yml", 2, uColumns, 2, uValues, 1, uConditions);
+    
+    // delete a row
+    Condition rConditions[] = {{"project", "y", "="}};
+    deleteRows("databases/base2.yml", "databases/base2/table2.yml", 1, rConditions);
     
     free(managerPath);
     return 0;
