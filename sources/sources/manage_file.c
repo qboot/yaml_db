@@ -341,3 +341,40 @@ void removeLine(const char *filename, int lineNumber)
     remove(filename);
     rename(newFilename, filename);
 }
+
+//
+// Replace a specific line in a file
+//
+void replaceLine(const char *filename, int lineNumber, char *newLine)
+{
+    char newFilename[STRING_SIZE] = "";
+    strcpy(newFilename, filename);
+    newFilename[strlen(newFilename)-4] = '\0';
+    strcat(newFilename, "_new.yml");
+    
+    FILE *oldFile = fopen(filename, "r");
+    FILE *newFile = fopen(newFilename, "w");
+    
+    if (oldFile == NULL || newFile == NULL) {
+        printf("fopen() failed in file %s at line #%d\n", __FILE__, __LINE__);
+        exit(EXIT_FAILURE);
+    }
+    
+    int pos = 0;
+    char line[STRING_SIZE] = "";
+    
+    while (fgets(line, STRING_SIZE, oldFile) != NULL) {
+        if (pos != lineNumber) {
+            fputs(line, newFile);
+        } else {
+            fputs(newLine, newFile);
+        }
+        
+        ++pos;
+    }
+    
+    fclose(oldFile);
+    fclose(newFile);
+    remove(filename);
+    rename(newFilename, filename);
+}

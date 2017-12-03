@@ -10,7 +10,8 @@
 
 #include "config.h"
 
-void trimString(char *string);
+void trimSpaces(char *string);
+void trimLeadingSpaces(char *string);
 char** manageArray(char **array, int *size, int *capacity);
 char** appendValueToArray(char **array, int *size, int *capacity, char *value);
 

@@ -13,7 +13,7 @@
 //
 // Trim a string : remove all spaces
 //
-void trimString(char *string)
+void trimSpaces(char *string)
 {
     char newString[STRING_SIZE] = "";
     
@@ -22,6 +22,28 @@ void trimString(char *string)
             char charToString[] = {string[i], '\0'};
             strcat(newString, charToString);
         }
+    }
+    
+    strcpy(string, newString);
+}
+
+//
+// Trim a string : remove all spaces
+//
+void trimLeadingSpaces(char *string)
+{
+    char newString[STRING_SIZE] = "";
+    int isBeginning = 1;
+    
+    for (int i = 0; i < strlen(string); ++i) {
+        if (string[i] == ' ' && isBeginning) {
+            continue;
+        }
+        
+        isBeginning = 0;
+        
+        char charToString[] = {string[i], '\0'};
+        strcat(newString, charToString);
     }
     
     strcpy(string, newString);
@@ -39,6 +61,10 @@ char** manageArray(char **array, int *size, int *capacity)
     
     for (int i = 0; i < *size; ++i) {
         newArray[i] = array[i];
+    }
+    
+    for (int i = 0; i < *size; ++i) {
+        free(array[i]);
     }
     
     free(array);

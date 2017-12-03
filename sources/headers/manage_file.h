@@ -23,5 +23,6 @@ void removeDir(const char *dirname);
 int isValidName(const char *name);
 int hasProperty(const char *filename, const char *property);
 void removeLine(const char *filename, int lineNumber);
+void replaceLine(const char *filename, int lineNumber, char *newLine);
 
 #endif

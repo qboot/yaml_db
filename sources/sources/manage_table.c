@@ -158,7 +158,7 @@ int hasColumn(const char *table, const char *name)
 
         // trim spaces + remove final ':' char
         line[strlen(line)-2] = '\0';
-        trimString(line);
+        trimSpaces(line);
         char *columnName = line;
         
         if (strcmp(columnName, name) == 0) {
@@ -180,9 +180,11 @@ void addRows(
      const int nbColumns,
      const char **columns,
      const int nbRows,
-     const char ***rows
+     const Row *rows
 )
 {
+    // TODO: Case where no column is given
+    
     char **columnNames = NULL;
     int *size = malloc(sizeof(int));
     columnNames = getColumns(table, size);
@@ -206,7 +208,7 @@ void addRows(
                 }
                 
                 strcat(row, "\"");
-                strcat(row, rows[i][k]);
+                strcat(row, rows[i].cells[j].data);
                 strcat(row, "\",");
                 found = 1;
                 break;
@@ -241,8 +243,9 @@ void addRows(
     fclose(file);
     
     // free memory
-    free(columns);
-    free(rows);
+    for (int i = 0; i < *size; ++i) {
+        free(columnNames[i]);
+    }
     free(size);
     free(columnNames);
 }
@@ -253,12 +256,12 @@ void addRows(
 //
 char** getColumns(const char *table, int *nbColumns)
 {
-    char **columns = malloc(ARRAY_SIZE * sizeof(int));
+    char **columns = malloc(ARRAY_CAPACITY * sizeof(int));
     int *size = malloc(sizeof(int));
     int *capacity = malloc(sizeof(int));
     
     *size = 0;
-    *capacity = ARRAY_SIZE;
+    *capacity = ARRAY_CAPACITY;
     
     FILE *file = fopen(table, "r");
     
@@ -270,7 +273,11 @@ char** getColumns(const char *table, int *nbColumns)
     
     char line[STRING_SIZE] = "";
     
-    while (fgets(line, STRING_SIZE, file) != NULL && (strcmp(line, TAB "data:\n") || strcmp(line, TAB "data: ~\n"))) {
+    while (fgets(line, STRING_SIZE, file) != NULL) {
+        
+        if (strcmp(line, TAB "data:\n") == 0 || strcmp(line, TAB "data: ~\n") == 0) {
+            break;
+        }
         
         if (strstr(line, TAB TAB) == NULL || strstr(line, TAB TAB TAB) != NULL) {
             continue;
@@ -278,7 +285,7 @@ char** getColumns(const char *table, int *nbColumns)
         
         // trim spaces + remove final ':' char
         line[strlen(line)-2] = '\0';
-        trimString(line);
+        trimSpaces(line);
         
         columns = appendValueToArray(columns, size, capacity, line);
     }
@@ -286,6 +293,7 @@ char** getColumns(const char *table, int *nbColumns)
     fclose(file);
     
     *nbColumns = *size;
+    
     free(size);
     free(capacity);
     
@@ -295,7 +303,8 @@ char** getColumns(const char *table, int *nbColumns)
 //
 // Remove ~ in `data: ~` before inserting data
 //
-void removeDataTilde(const char *table) {
+void removeDataTilde(const char *table)
+{
     FILE *file = fopen(table, "r");
     
     if (file == NULL) {
@@ -323,15 +332,174 @@ void removeDataTilde(const char *table) {
         return;
     }
     
-    removeLine(table, lineNumber);
-    
-    file = fopen(table, "a");
-    fputs(TAB "data:\n", file);
-    fclose(file);
+    replaceLine(table, lineNumber, TAB "data:\n");
 }
 
 // TODO
+void updateRows(
+    const char *database,
+    const char *table,
+    const int nbColumns,
+    const char **columns,
+    const int nbValues,
+    const char **values,
+    const int nbConditions,
+    const Condition *conditions
+)
+{
+    // get columnNames
+    char **columnNames = NULL;
+    int *size = malloc(sizeof(int));
+    columnNames = getColumns(table, size);
+    
+    FILE *file = fopen(table, "r");
+    
+    if (file == NULL) {
+        free((char *) table);
+        printf("fopen() failed in file %s at line #%d\n", __FILE__, __LINE__);
+        exit(EXIT_FAILURE);
+    }
+    
+    char line[STRING_SIZE] = "";
+    int pos = 0;
+    int isData = 0;
+    
+    while (fgets(line, STRING_SIZE, file) != NULL) {
+        if (strcmp(line, TAB "data:\n") == 0) {
+            isData = 1;
+            ++pos;
+            continue;
+        }
+        
+        if (!isData) {
+            ++pos;
+            continue;
+        }
+        
+        if (strcmp(line, TAB "data: ~\n") == 0) {
+            break;
+        }
+        
+        // row is array of values for current line
+        int *rowSize = malloc(sizeof(int));
+        char **row = parseRow(line, rowSize);
+        int needUpdate = 0;
+        
+        // check if row is concerned by `where` claused
+        for (int i = 0; i < *size; ++i) {
+            for (int j = 0; j < nbConditions; ++j) {
+                if (strcmp(conditions[j].type, "=") == 0) {
+                    if (strcmp(conditions[j].column, columnNames[i]) == 0) {
+                        if (strcmp(conditions[j].value, row[i]) == 0) {
+                            needUpdate = 1;
+                        } else {
+                            needUpdate = 0;
+                        }
+                    }
+                } else if (strcmp(conditions[i].type, ">") == 0) {
+                    // TODO
+                } else if (strcmp(conditions[i].type, "<") == 0) {
+                    // TODO
+                }
+            }
+        }
 
-// addColumn(Column col) - alter table add column
-// dropColumn()
-// dropRow()
+        if (needUpdate) {
+            char newLine[STRING_SIZE] = TAB TAB "- [";
+
+            for (int i = 0; i < *size; ++i) {
+                int find = 0;
+                strcat(newLine, "\"");
+                for (int j = 0; j < nbColumns; ++j) {
+                    if (strcmp(columnNames[i], columns[j]) == 0) {
+                        find = 1;
+                        strcat(newLine, values[j]);
+                    }
+                }
+                
+                if (!find) {
+                    strcat(newLine, row[i]);
+                }
+                
+                strcat(newLine, "\",");
+            }
+
+            newLine[strlen(newLine)-1] = '\0';
+            strcat(newLine, "]\n");
+
+            // replace line in file
+            replaceLine(table, pos, newLine);
+        }
+        
+        free(row);
+        free(rowSize);
+        
+        ++pos;
+    }
+    
+    fclose(file);
+    
+    free(columnNames);
+    free(size);
+}
+
+char **parseRow(char *row, int *size)
+{
+    // clean row before manipulate it
+    trimLeadingSpaces(row);
+    
+    char **rowToArray = malloc(ARRAY_CAPACITY * sizeof(int));
+    int *capacity = malloc(sizeof(int));
+    
+    *size = 0;
+    *capacity = ARRAY_CAPACITY;
+    
+    int start = 0;
+    int isReading = 0;
+    char value[STRING_SIZE] = "";
+    
+    for (int i = 0; i < strlen(row); ++i) {
+        if (row[i] != '[' && !start) {
+            continue;
+        }
+        
+        start = 1;
+        
+        if (row[i] == '"' && row[i-1] != '\\' && !isReading) {
+            isReading = 1;
+            continue;
+        }
+        
+        if (row[i] == '"' && row[i-1] != '\\' && isReading) {
+            isReading = 0;
+            
+            // insert in array
+            rowToArray = appendValueToArray(rowToArray, size, capacity, value);
+            strcpy(value, "\0");
+            
+            continue;
+        }
+        
+        if (isReading) {
+            char charToString[] = {row[i], '\0'};
+            strcat(value, charToString);
+        }
+    }
+    
+    free(capacity);
+    
+    return rowToArray;
+}
+
+void deleteRows(
+    const char *database,
+    const char *table,
+    const Condition *conditions
+    )
+{
+    // TODO
+}
+
+// rethink how to save different types, maybe validate them too - low
+// try to use defined structs
+// split row related function in a new file /!\

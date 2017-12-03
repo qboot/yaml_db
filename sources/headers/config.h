@@ -10,12 +10,17 @@
 
 #define TAB "    "
 #define STRING_SIZE 255
-#define ARRAY_SIZE 20
+#define ARRAY_CAPACITY 20
 #define DB_FILENAME "databases"
 #define DB_PATH DB_FILENAME "/"
 
 typedef struct {
-    char **data;
+    char *data;
+} Cell;
+
+typedef struct {
+    int nbCells;
+    Cell *cells;
 } Row;
 
 typedef struct {
@@ -44,5 +49,11 @@ typedef struct {
     int nbTables;
     Table *tables;
 } Database;
+
+typedef struct {
+    char *column;
+    char *value;
+    char *type;
+} Condition;
 
 #endif
