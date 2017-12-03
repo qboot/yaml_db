@@ -36,7 +36,6 @@ typedef struct {
 
 typedef struct {
     char *name;
-    char *path;
     int nbColumns;
     int nbRows;
     Column *columns;
@@ -45,10 +44,16 @@ typedef struct {
 
 typedef struct {
     char *name;
-    char *path;
     int nbTables;
     Table *tables;
 } Database;
+
+typedef struct {
+    char *name;
+    char *path;
+    int nbDatabases;
+    Database *databases;
+} Manager;
 
 typedef struct {
     char *column;

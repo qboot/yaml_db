@@ -13,59 +13,58 @@
 #include "../headers/manage_database.h"
 #include "../headers/manage_table.h"
 #include "../headers/manage_array.h"
+#include "../headers/manage_row.h"
 
 #include <ctype.h>
 
 int main(int argc, const char *argv[])
 {    
-    char *manager = DB_FILENAME;
-    char *managerPath = createFile(manager);
+    Manager manager = {DB_FILENAME, createFile(DB_FILENAME)};
     
-    char *base1 = "base1";
-    char *base2 = "base2";
+    Database base1 = {"base1"};
+    Database base2 = {"base2"};
     
-    char *table1 = "table1";
     Column columns1[] = {{"id", "int"}, {"pseudo", "char"}};
-    int nbColumns1 = 2;
+    Table table1 = {"table1", 2, 0, columns1};
     
-    char *table2 = "table2";
     Column columns2[] = {{"id", "int"}, {"project", "char"}, {"event", "char"}, {"people", "char"}};
-    int nbColumns2 = 4;
+    Table table2 = {"table2", 4, 0, columns2};
     
     // create and drop databases + tables
-    createDatabase(managerPath, base1);
-    createDatabase(managerPath, base2);
-    createTable(base2, table1, nbColumns1, columns1);
-    createTable(base2, table2, nbColumns2, columns2);
-    
+    createDatabase(manager, base1);
+    createDatabase(manager, base2);
+    createTable(base2, table1);
+    createTable(base2, table2);
+
     dropTable(base2, table1);
-    dropDatabase(managerPath, base1);
+    dropDatabase(manager, base1);
     
     // check if column exists
-    char columnName[] = "project";
-    printf("%d\n", hasColumn("databases/base2/table2.yml", columnName));
-    
+    Column randomColumn = {"project"};
+    printf("%d // column exists!\n", hasColumn(base2, table2, randomColumn));
+
     // add three rows
-    const char *columns[] = {"id", "project", "event", "people"};
     Cell cells1[] = {"1", "2", "3", "4"};
     Cell cells2[] = {"a", "b", "c", "d"};
     Cell cells3[] = {"z", "y", "x", "w"};
-    const Row rows[] = {{4, cells1}, {4, cells2}, {4, cells3}};
-    int rowsSize = 3;
+    Row newRows[] = {{4, cells1}, {4, cells2}, {4, cells3}};
+    Column newColumns[] = {{"id"}, {"project"}, {"event"}, {"people"}};
+    Table newTable = {table2.name, 4, 3, newColumns, newRows};
+
+    addRows(base2, newTable);
+
+    // update a row with `where` clause
+    const char *updateValues[] = {"newId", "newProject"};
+    Column updateColumns[] = {{"id"}, {"project"}};
+    Condition updateConditions[] = {{"project", "b", "="}};
+    Table updateTable = {table2.name, 2, 0, updateColumns};
+
+    updateRows(base2, updateTable, 2, updateValues, 1, updateConditions);
+
+    // delete a row with `where` clause
+    Condition deleteConditions[] = {{"project", "y", "="}};
+    deleteRows(base2, table2, 1, deleteConditions);
     
-    addRows("databases/base2.yml", "databases/base2/table2.yml", 4, columns, rowsSize, rows);
-    
-    // update a row
-    const char *uColumns[] = {"id", "project"};
-    const char *uValues[] = {"newId", "newProject"};
-    Condition uConditions[] = {{"project", "b", "="}};
-    
-    updateRows("databases/base2.yml", "databases/base2/table2.yml", 2, uColumns, 2, uValues, 1, uConditions);
-    
-    // delete a row
-    Condition rConditions[] = {{"project", "y", "="}};
-    deleteRows("databases/base2.yml", "databases/base2/table2.yml", 1, rConditions);
-    
-    free(managerPath);
+    free(manager.path);
     return 0;
 }

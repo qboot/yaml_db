@@ -50,10 +50,10 @@ void trimLeadingSpaces(char *string)
 }
 
 //
-// Allocate more space to a given array, depending of size and capacity
+// Allocate more space to a given string array, depending of size and capacity
 // Return an array of char
 //
-char** manageArray(char **array, int *size, int *capacity)
+char** manageStringArray(char **array, int *size, int *capacity)
 {
     *capacity *= 3;
     
@@ -72,10 +72,10 @@ char** manageArray(char **array, int *size, int *capacity)
 }
 
 //
-// Append a value to a given array
+// Append a value to a given string array
 // Return an array of char
 //
-char** appendValueToArray(char **array, int *size, int *capacity, char *value)
+char** appendValueToStringArray(char **array, int *size, int *capacity, char *value)
 {
     if (*size < *capacity) {
         array[*size] = malloc(STRING_SIZE * sizeof(char));
@@ -83,7 +83,7 @@ char** appendValueToArray(char **array, int *size, int *capacity, char *value)
         ++(*size);
         return array;
     } else {
-        char **newArray = manageArray(array, size, capacity);
+        char **newArray = manageStringArray(array, size, capacity);
         newArray[*size] = malloc(STRING_SIZE * sizeof(char));
         strcpy(newArray[*size], value);
         ++(*size);
@@ -92,8 +92,8 @@ char** appendValueToArray(char **array, int *size, int *capacity, char *value)
 }
 
 //
-// Allocate more space to a given array, depending of size and capacity
-// Return an array of char
+// Allocate more space to a given int array, depending of size and capacity
+// Return an array of int
 //
 int* manageIntArray(int *array, int *size, int *capacity)
 {
@@ -110,8 +110,8 @@ int* manageIntArray(int *array, int *size, int *capacity)
 }
 
 //
-// Append a value to a given array
-// Return an array of char
+// Append a value to a given int array
+// Return an array of int
 //
 int* appendValueToIntArray(int *array, int *size, int *capacity, int value)
 {

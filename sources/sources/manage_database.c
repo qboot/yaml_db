@@ -13,17 +13,17 @@
 //
 // Create a new database
 //
-void createDatabase(const char *manager, const char *name)
+void createDatabase(const Manager manager, const Database database)
 {
     // if database already exists, stop here
-    if (hasDatabase(manager, name) != 0) {
+    if (hasDatabase(manager, database) != 0) {
         return;
     }
     
-    char *path = createFile(name);
-    createDir(name);
+    char *databasePath = createFile(database.name);
+    createDir(database.name);
     
-    FILE *file = fopen(manager, "a");
+    FILE *file = fopen(manager.path, "a");
     
     if (file == NULL) {
         printf("fopen() failed in file %s at line #%d\n", __FILE__, __LINE__);
@@ -32,46 +32,46 @@ void createDatabase(const char *manager, const char *name)
     
     fputs(TAB, file);
     fputs("- ", file);
-    fputs(name, file);
+    fputs(database.name, file);
     fputs("\n", file);
     fclose(file);
-    free(path);
+    free(databasePath);
 }
 
 //
 // Drop an existing database
 //
-void dropDatabase(const char *manager, const char *name)
+void dropDatabase(const Manager manager, const Database database)
 {
-    int lineNumber = hasDatabase(manager, name);
+    int lineNumber = hasDatabase(manager, database);
     
     // if database doesn't exist, stop here
     if (lineNumber == 0) {
         return;
     }
     
-    removeFile(name);
-    removeDir(name);
-    removeLine(manager, lineNumber);
+    removeFile(database.name);
+    removeDir(database.name);
+    removeLine(manager.path, lineNumber);
 }
 
 //
 // Check if manager has a database named `name`
 //
-int hasDatabase(const char *manager, const char *name)
+int hasDatabase(const Manager manager, const Database database)
 {
-    return hasProperty(manager, name);
+    return hasProperty(manager.path, database.name);
 }
 
 //
 // Check if a database exists
 // Return 1 if exists, else 0
 //
-int isDatabase(const char *name)
+int isDatabase(const Database database)
 {
-    char *path = createFilePath(name);
-    int isDatabase = isFile(path);
+    char *databasePath = createFilePath(database.name);
+    int isDatabase = isFile(databasePath);
     
-    free(path);
+    free(databasePath);
     return isDatabase;
 }
