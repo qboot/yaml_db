@@ -12,10 +12,9 @@
 
 void trimSpaces(char *string);
 void trimLeadingSpaces(char *string);
-char** manageStringArray(char **array, int *size, int *capacity);
-char** appendValueToStringArray(char **array, int *size, int *capacity, char *value);
-int* manageIntArray(int *array, int *size, int *capacity);
-int* appendValueToIntArray(int *array, int *size, int *capacity, int value);
+StringArray manageStringArray(StringArray array);
+StringArray appendValueToStringArray(StringArray, char *value);
+IntArray manageIntArray(IntArray array);
+IntArray appendValueToIntArray(IntArray array, int value);
 
 #endif
-

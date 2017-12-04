@@ -61,4 +61,18 @@ typedef struct {
     char *type;
 } Condition;
 
+typedef struct {
+    char **data;
+    int size;
+    int capacity;
+    
+} StringArray;
+
+typedef struct {
+    int *data;
+    int size;
+    int capacity;
+    
+} IntArray;
+
 #endif

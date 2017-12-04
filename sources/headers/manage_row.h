@@ -10,7 +10,7 @@
 
 #include "config.h"
 
-char **parseRow(char *row, int *size);
+StringArray parseRow(char *row);
 void addRows(const Database database, const Table table);
 void updateRows(const Database database, const Table table, const int nbValues, const char **values, const int nbConditions, const Condition *conditions);
 void deleteRows(const Database database, const Table table, const int nbConditions, const Condition *conditions);

@@ -177,16 +177,15 @@ int hasColumn(const Database database, const Table table, const Column column)
 // Get all column names of a given table
 // Return them in an array of char
 //
-char** getColumnNames(const Database database, const Table table, int *nbColumns)
+StringArray getColumnNames(const Database database, const Table table)
 {
     char *tablePath = createFileInDirPath(table.name, database.name);
     
-    char **columnNames = malloc(ARRAY_CAPACITY * sizeof(int));
-    int *size = malloc(sizeof(int));
-    int *capacity = malloc(sizeof(int));
-    
-    *size = 0;
-    *capacity = ARRAY_CAPACITY;
+    StringArray columnNames = {
+        malloc(ARRAY_CAPACITY * sizeof(int)),
+        0,
+        ARRAY_CAPACITY
+    };
     
     FILE *file = fopen(tablePath, "r");
     
@@ -212,15 +211,10 @@ char** getColumnNames(const Database database, const Table table, int *nbColumns
         line[strlen(line)-2] = '\0';
         trimSpaces(line);
         
-        columnNames = appendValueToStringArray(columnNames, size, capacity, line);
+        columnNames = appendValueToStringArray(columnNames, line);
     }
     
     fclose(file);
-    
-    *nbColumns = *size;
-    
-    free(size);
-    free(capacity);
     free(tablePath);
     
     return columnNames;

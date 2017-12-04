@@ -53,21 +53,25 @@ void trimLeadingSpaces(char *string)
 // Allocate more space to a given string array, depending of size and capacity
 // Return an array of char
 //
-char** manageStringArray(char **array, int *size, int *capacity)
+StringArray manageStringArray(StringArray array)
 {
-    *capacity *= 3;
+    array.capacity *= 3;
     
-    char **newArray = malloc(*capacity * sizeof(int));
+    StringArray newArray = {
+        malloc(array.capacity * sizeof(int)),
+        array.size,
+        array.capacity
+    };
     
-    for (int i = 0; i < *size; ++i) {
-        newArray[i] = array[i];
+    for (int i = 0; i < array.size; ++i) {
+        newArray.data[i] = array.data[i];
     }
     
-    for (int i = 0; i < *size; ++i) {
-        free(array[i]);
+    for (int i = 0; i < array.size; ++i) {
+        free(array.data[i]);
     }
     
-    free(array);
+    free(array.data);
     return newArray;
 }
 
@@ -75,18 +79,18 @@ char** manageStringArray(char **array, int *size, int *capacity)
 // Append a value to a given string array
 // Return an array of char
 //
-char** appendValueToStringArray(char **array, int *size, int *capacity, char *value)
+StringArray appendValueToStringArray(StringArray array, char *value)
 {
-    if (*size < *capacity) {
-        array[*size] = malloc(STRING_SIZE * sizeof(char));
-        strcpy(array[*size], value);
-        ++(*size);
+    if (array.size < array.capacity) {
+        array.data[array.size] = malloc(STRING_SIZE * sizeof(char));
+        strcpy(array.data[array.size], value);
+        ++array.size;
         return array;
     } else {
-        char **newArray = manageStringArray(array, size, capacity);
-        newArray[*size] = malloc(STRING_SIZE * sizeof(char));
-        strcpy(newArray[*size], value);
-        ++(*size);
+        StringArray newArray = manageStringArray(array);
+        newArray.data[newArray.size] = malloc(STRING_SIZE * sizeof(char));
+        strcpy(newArray.data[newArray.size], value);
+        ++newArray.size;
         return newArray;
     }
 }
@@ -95,17 +99,21 @@ char** appendValueToStringArray(char **array, int *size, int *capacity, char *va
 // Allocate more space to a given int array, depending of size and capacity
 // Return an array of int
 //
-int* manageIntArray(int *array, int *size, int *capacity)
+IntArray manageIntArray(IntArray array)
 {
-    *capacity *= 3;
+    array.capacity *= 3;
     
-    int *newArray = malloc(*capacity * sizeof(int));
+    IntArray newArray = {
+        malloc(array.capacity * sizeof(int)),
+        array.size,
+        array.capacity
+    };
     
-    for (int i = 0; i < *size; ++i) {
-        newArray[i] = array[i];
+    for (int i = 0; i < array.size; ++i) {
+        newArray.data[i] = array.data[i];
     }
     
-    free(array);
+    free(array.data);
     return newArray;
 }
 
@@ -113,16 +121,16 @@ int* manageIntArray(int *array, int *size, int *capacity)
 // Append a value to a given int array
 // Return an array of int
 //
-int* appendValueToIntArray(int *array, int *size, int *capacity, int value)
+IntArray appendValueToIntArray(IntArray array, int value)
 {
-    if (*size < *capacity) {
-        array[*size] = value;
-        ++(*size);
+    if (array.size < array.capacity) {
+        array.data[array.size] = value;
+        ++array.size;
         return array;
     } else {
-        int *newArray = manageIntArray(array, size, capacity);
-        newArray[*size] = value;
-        ++(*size);
+        IntArray newArray = manageIntArray(array);
+        newArray.data[newArray.size] = value;
+        ++newArray.size;
         return newArray;
     }
 }
