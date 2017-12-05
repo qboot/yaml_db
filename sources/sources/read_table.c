@@ -26,6 +26,7 @@
  **/
 void parseData(StringArray data, Table *currentTable)
 {
+<<<<<<< HEAD
     // allocate space for rows.
     currentTable->rows = malloc(data.size);
     currentTable->nbRows = data.size;
@@ -65,8 +66,6 @@ void printResult(Table *currentTable)
     }
     printf("\n");
     
-    /*
-    
     for (int i = 0; i < currentTable->nbColumns; i++) {
         printf("%s | ", currentTable->columns[i]);
     }
@@ -80,7 +79,6 @@ void printResult(Table *currentTable)
         printf("\n");
     }
 }
-
 
 /**
  // Search in the currentTable the place of the column searched

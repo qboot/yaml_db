@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 <<<<<<< HEAD
+<<<<<<< HEAD
 #include "config.h"
 
 void parseData(StringArray data, Table *currentTable);
