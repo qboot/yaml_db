@@ -12,14 +12,16 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include "../headers/config.h"
 #include "../headers/manage_file.h"
+
+static char* createPath(const char *name, const int isFile);
+static char* generateFile(const char *filepath, const char *filename);
 
 //
 // Create a path `databases/name` for a given `name`
 // Return a fullpath (root + name)
 //
-char* createPath(const char *name, const int isFile)
+static char* createPath(const char *name, const int isFile)
 {
     char path[STRING_SIZE] = DB_PATH;
     strcat(path, name);
@@ -53,23 +55,30 @@ char* createDirPath(const char *dirname)
 }
 
 //
-// Create a file named `filename` and write its first line
+// Create a path `databases/dirname/filename.yml` for a given `dirname` and `filename`
+// Return a fullpath (root + dirname + filename + extension)
 //
-void createFile(const char *filename)
+char* createFileInDirPath(const char *filename, const char *dirname)
 {
-    char *path = createFilePath(filename);
+    char path[STRING_SIZE] = "";
+    strcat(path, dirname);
+    strcat(path, "/");
+    strcat(path, filename);
+    
+    return createPath(path, 1);
+}
+
+//
+// Generate a file named `filename` and write its first line
+// Return a fullpath (root + filename + extension)
+//
+static char* generateFile(const char *filepath, const char *filename)
+{
+    char *path = (char*) filepath;
     
     // file already exists, stop here
     if (isFile(path)) {
-        free(path);
-        return;
-    }
-    
-    // filename is not valid, stop here
-    if (isValidName(filename) == 0) {
-        free(path);
-        printf("Name should only contain 0-9 a-z A-Z and _ characters.\n");
-        exit(EXIT_FAILURE);
+        return path;
     }
     
     FILE *file = fopen(path, "w");
@@ -82,7 +91,39 @@ void createFile(const char *filename)
     
     fprintf(file, "%s:\n", filename);
     fclose(file);
-    free(path);
+    return path;
+}
+
+//
+// Create a file named `filename`
+// Return a fullpath (root + filename + extension)
+//
+char* createFile(const char *filename)
+{
+    // filename is not valid, stop here
+    if (isValidName(filename) == 0) {
+        printf("Name should only contain 0-9 a-z A-Z and _ characters.\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    char *filepath = createFilePath(filename);
+    return generateFile(filepath, filename);
+}
+
+//
+// Create a file named `filename` in directory `dirname`
+// Return a fullpath (root + dirname + filename + extension)
+//
+char* createFileInDir(const char *filename, const char *dirname)
+{
+    // filename is not valid, stop here
+    if (isValidName(filename) == 0) {
+        printf("Name should only contain 0-9 a-z A-Z and _ characters.\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    char *filepath = createFileInDirPath(filename, dirname);
+    return generateFile(filepath, filename);
 }
 
 //
@@ -91,6 +132,23 @@ void createFile(const char *filename)
 void removeFile(const char *filename)
 {
     char *path = createFilePath(filename);
+    
+    // file doesn't exist, stop here
+    if (isFile(path) == 0) {
+        free(path);
+        return;
+    }
+    
+    remove(path);
+    free(path);
+}
+
+//
+// Remove a file named `filename` in directory `dirname`
+//
+void removeFileInDir(const char *filename, const char *dirname)
+{
+    char *path = createFileInDirPath(filename, dirname);
     
     // file doesn't exist, stop here
     if (isFile(path) == 0) {
@@ -273,6 +331,43 @@ void removeLine(const char *filename, int lineNumber)
     while (fgets(line, STRING_SIZE, oldFile) != NULL) {
         if (pos != lineNumber) {
             fputs(line, newFile);
+        }
+        
+        ++pos;
+    }
+    
+    fclose(oldFile);
+    fclose(newFile);
+    remove(filename);
+    rename(newFilename, filename);
+}
+
+//
+// Replace a specific line in a file
+//
+void replaceLine(const char *filename, int lineNumber, char *newLine)
+{
+    char newFilename[STRING_SIZE] = "";
+    strcpy(newFilename, filename);
+    newFilename[strlen(newFilename)-4] = '\0';
+    strcat(newFilename, "_new.yml");
+    
+    FILE *oldFile = fopen(filename, "r");
+    FILE *newFile = fopen(newFilename, "w");
+    
+    if (oldFile == NULL || newFile == NULL) {
+        printf("fopen() failed in file %s at line #%d\n", __FILE__, __LINE__);
+        exit(EXIT_FAILURE);
+    }
+    
+    int pos = 0;
+    char line[STRING_SIZE] = "";
+    
+    while (fgets(line, STRING_SIZE, oldFile) != NULL) {
+        if (pos != lineNumber) {
+            fputs(line, newFile);
+        } else {
+            fputs(newLine, newFile);
         }
         
         ++pos;

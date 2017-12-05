@@ -8,8 +8,11 @@
 #ifndef MANAGE_DB
 #define MANAGE_DB
 
-void createDatabase(const char *manager, const char *name);
-void dropDatabase(const char *manager, const char *name);
-int hasDatabase(const char *manager, const char *name);
+#include "config.h"
+
+void createDatabase(const Manager manager, const Database database);
+void dropDatabase(const Manager manager, const Database database);
+int hasDatabase(const Manager manager, const Database database);
+int isDatabase(const Database database);
 
 #endif
