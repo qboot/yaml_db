@@ -34,7 +34,7 @@ int main(int argc, const char * argv[]) {
 
 void entryLoop(){
     
-    char entry[100] = "";
+    char entry[200] = "";
     char *exit = "exit";
     
     do{
@@ -42,6 +42,6 @@ void entryLoop(){
         fgets(entry, sizeof(entry), stdin);
         parseEntry(entry);
         
-    }while(strncmp(entry, exit, 5));
+    }while(strcmp(entry, exit));
     
 }
