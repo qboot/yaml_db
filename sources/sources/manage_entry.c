@@ -115,6 +115,11 @@ void parseEntry(char* entry){
     const char *CREATE = "CREATE";
     const char *DATABASE = "DATABASE";
     const char *TABLE = "TABLE";
+    const char *DATABASES = "DATABASES";
+    const char *TABLES = "TABLES";
+    const char *DROP = "DROP";
+    const char *SHOW = "SHOW";
+    const char *USE = "USE";
     
     int numberOfValue = 0;
     
@@ -187,9 +192,7 @@ void parseEntry(char* entry){
         // CREATE DATABASE
         
         if(strcmp(parsedEntry[1], DATABASE) == 0){
-            printf("launch the CREATE DATABASE function\n");
-            printf("name of the database : ");
-            printf("%s\n", parsedEntry[2]); // parsedEntry[2] is the name of the database
+            printf("createDatabase(%s);\n", parsedEntry[2]); // parsedEntry[2] is the name of the database
         }
         
         // CREATE TABLE ( Primary key, not null, auto increment not supported yet ) WIP
@@ -211,6 +214,32 @@ void parseEntry(char* entry){
             
             free(columnOfTableCreation);
         }
+    }
+    
+    else if(strcmp(parsedEntry[0], DROP) == 0){
+        
+        if (strcmp(parsedEntry[1], DATABASE) == 0) {
+            printf("dropDatabase(%s);\n", parsedEntry[2]); // parsedEntry[2] is the name of the database
+        }
+        else if (strcmp(parsedEntry[1], TABLE) == 0) {
+            printf("dropTable(%s);\n", parsedEntry[2]); // parsedEntry[2] is the name of the database
+        }
+        
+    }
+    
+    else if(strcmp(parsedEntry[0], SHOW) == 0){
+        
+        if (strcmp(parsedEntry[1], DATABASES) == 0) {
+            printf("showDatabases();\n");
+        }
+        else if (strcmp(parsedEntry[1], TABLES) == 0) {
+            printf("showTables();\n");
+        }
+        
+    }
+    
+    else if(strcmp(parsedEntry[0], USE) == 0){
+        printf("use(%s);\n", parsedEntry[1]);
     }
     
     else{
