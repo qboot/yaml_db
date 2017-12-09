@@ -12,17 +12,19 @@
 #include "../headers/special_parsing.h"
 #include "../headers/conf.h"
 
+
 // Global parsing
 
 void parseEntry(char* entry){
     
     unsigned long entryLength = strlen(entry);
     
-    if (strcmp(entry, "\n") == 0) {
+    if ((strcmp(entry, "\n") == 0) ||(strcmp(entry, ";\n") == 0)) {
         return;
     }
     else if (entry[entryLength-2] != ';'){
-        printf("Be careful of the SQL syntax, you must put an ';' at the end of your command\n");
+        printf("Please enter a valid SQL command\n");
+        printf("Check this website for more information : http://sql.sh/\n");
         return;
     }
     
@@ -51,6 +53,12 @@ void parseEntry(char* entry){
             inBrackets = 0;
         }
         
+    }
+    
+    if(numberOfWords == 0){
+        printf("Please enter a valid SQL command\n");
+        printf("Check this website for more information : http://sql.sh/\n");
+        return;
     }
     
     // Create a array with words from entry
