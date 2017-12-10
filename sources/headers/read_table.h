@@ -10,8 +10,6 @@
 #define read_table_h
 
 #include <stdio.h>
-<<<<<<< HEAD
-<<<<<<< HEAD
 #include "config.h"
 
 void parseData(StringArray data, Table *currentTable);

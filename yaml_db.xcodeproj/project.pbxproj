@@ -16,10 +16,9 @@
 		66A181941FDD70E4002C675F /* manage_entry.c in Sources */ = {isa = PBXBuildFile; fileRef = 66A181921FDD70E4002C675F /* manage_entry.c */; };
 		66A181961FDD7583002C675F /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 667BDAD11F9CE1A5009B818D /* main.c */; };
 		667BDAD21F9CE1A5009B818D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 667BDAD11F9CE1A5009B818D /* main.c */; };
+		E80F362D1FDD858F0030660A /* manage_array.c in Sources */ = {isa = PBXBuildFile; fileRef = E80F362C1FDD858F0030660A /* manage_array.c */; };
 		E80F36301FDD89A10030660A /* read_file.c in Sources */ = {isa = PBXBuildFile; fileRef = E80F362F1FDD89A10030660A /* read_file.c */; };
 		E83BFB811FC9E6B400A5B18D /* read_table.c in Sources */ = {isa = PBXBuildFile; fileRef = E83BFB801FC9E6B400A5B18D /* read_table.c */; };
-		E83BFB811FC9E6B400A5B18D /* read_table.c in Sources */ = {isa = PBXBuildFile; fileRef = E83BFB801FC9E6B400A5B18D /* read_table.c */; };
-		E83BFB841FCAE9AA00A5B18D /* test_read_table.c in Sources */ = {isa = PBXBuildFile; fileRef = E83BFB831FCAE9AA00A5B18D /* test_read_table.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -142,6 +141,7 @@
 				66A1818F1FDD70DB002C675F /* manage_entry.h */,
 				66A181901FDD70DB002C675F /* manage_parsing.h */,
 				661A35171FB8B14800CAD23F /* config.h */,
+				E80F362B1FDD858F0030660A /* manage_array.h */,
 				E83BFB7F1FC9E6B400A5B18D /* read_table.h */,
 				E80F362E1FDD89A10030660A /* read_file.h */,
 			);
@@ -254,17 +254,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				E83BFB811FC9E6B400A5B18D /* read_table.c in Sources */,
-<<<<<<< HEAD
 				E80F36301FDD89A10030660A /* read_file.c in Sources */,
 				6654B3771F9D4A42007EE525 /* manage_file.c in Sources */,
 				6654B3791F9D4A6C007EE525 /* manage_database.c in Sources */,
 				66A181961FDD7583002C675F /* main.c in Sources */,
-=======
+				E80F36301FDD89A10030660A /* read_file.c in Sources */,
 				6654B3771F9D4A42007EE525 /* manage_file.c in Sources */,
 				6654B3791F9D4A6C007EE525 /* manage_database.c in Sources */,
-				E83BFB841FCAE9AA00A5B18D /* test_read_table.c in Sources */,
 				667BDAD21F9CE1A5009B818D /* main.c in Sources */,
->>>>>>> Add functions to read a table and print columnName and datas
 				661A35191FB8FE2900CAD23F /* manage_table.c in Sources */,
 				66172C101FD3A0290039008F /* manage_array.c in Sources */,
 				660339F01FD4BA0600D9D604 /* manage_row.c in Sources */,
@@ -272,6 +269,7 @@
 				66A181941FDD70E4002C675F /* manage_entry.c in Sources */,
 				E83BFB841FCAE9AA00A5B18D /* test_read_table.c in Sources */,
 				667BDAD21F9CE1A5009B818D /* main.c in Sources */,
+				E80F362D1FDD858F0030660A /* manage_array.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
