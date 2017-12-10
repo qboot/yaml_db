@@ -15,7 +15,8 @@
 
 int main(int argc, const char * argv[]) {
     
-    printf("Welcome to yaml_db project !\n");
+    printf("Welcome to yaml_db project! \n");
+    printf("\n");
     printf("----------------------------\n");
     printf("   -                    -   \n");
     printf("  -                      -  \n");
@@ -26,7 +27,7 @@ int main(int argc, const char * argv[]) {
     
     entryLoop();
     
-    printf("\nClosing yaml_db project... Bye !\n");
+    printf("\nClosing yaml_db project... Bye!\n");
     
     return 0;
 }
@@ -41,7 +42,7 @@ void entryLoop() {
     char *exit = "exit\n";
     
     do {
-        printf("yaml_db > ");
+        printf("\nyaml_db > ");
         fgets(entry, sizeof(entry), stdin);
         parseEntry(manager, currentDatabase, entry);
     } while (strcmp(entry, exit));

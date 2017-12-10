@@ -13,7 +13,7 @@
 
 // Parsing of the INSERT INTO values
 
-char ** getValuesOfInsert(char *valueToParse, int *numberOfValue){
+char ** getValuesOfInsert(char *valueToParse, int *numberOfValues){
     
     unsigned long valueToParseLength = strlen(valueToParse);
     int inQuote = 0;
@@ -27,26 +27,26 @@ char ** getValuesOfInsert(char *valueToParse, int *numberOfValue){
             inQuote = 0;
         }
         else if(valueToParse[i] == ',' && inQuote == 0){
-            *numberOfValue += 1;
+            *numberOfValues += 1;
         }
         else if(valueToParse[i] == ')' && valueToParse[i+1] == ';'){
-            *numberOfValue += 1;
+            *numberOfValues += 1;
             break;
         }
         
     }
 
-    // Create an array of the Column structure with numberOfValue
+    // Create an array of the Column structure with numberOfValues
 
-    char **valuesOfInsert = malloc(sizeof(double)*(*numberOfValue));
+    char **valuesOfInsert = malloc(sizeof(double)*(*numberOfValues));
 
-    for(int i=0; i < *numberOfValue; i++){
+    for(int i=0; i < *numberOfValues; i++){
         valuesOfInsert[i] = malloc(sizeof(char*));
     }
 
     // Array initialization
 
-    for (int i = 0; i < *numberOfValue; i++){
+    for (int i = 0; i < *numberOfValues; i++){
         strcpy(valuesOfInsert[i], "");
     }
 
@@ -79,15 +79,15 @@ char ** getValuesOfInsert(char *valueToParse, int *numberOfValue){
         
     }
     
-    replaceQuotes(*numberOfValue, valuesOfInsert);
+    replaceQuotes(*numberOfValues, valuesOfInsert);
     
     return valuesOfInsert;
 }
 
 // Replace string with quotes by string without quotes
 
-void replaceQuotes(int numberOfValue, char** array){
-    for (int i = 0; i < numberOfValue; i++) {
+void replaceQuotes(int numberOfValues, char** array){
+    for (int i = 0; i < numberOfValues; i++) {
         unsigned long int arrayLength = strlen(array[i]);
         if((array[i][0] == 34 && array[i][arrayLength-1] == 34) || (array[i][0] == 39 && array[i][arrayLength-1] == 39)){
             for (int j = 0; j < arrayLength; j++) {
@@ -100,30 +100,30 @@ void replaceQuotes(int numberOfValue, char** array){
 
 // Parsing of the Columns in the CREATE TABLE command
 
-Column * getValuesOfTableCreation(char *valueToParse, int *numberOfValue){
+Column * getValuesOfTableCreation(char *valueToParse, int *numberOfValues){
     
     unsigned long valueToParseLength = strlen(valueToParse);
     
     for (int i = 1; i < valueToParseLength; i++) {
         
         if(valueToParse[i] == ','){
-            *numberOfValue += 1;
+            *numberOfValues += 1;
         }
         else if(valueToParse[i] == ')' && valueToParse[i+1] == ';'){
-            *numberOfValue += 1;
+            *numberOfValues += 1;
             break;
         }
         
     }
     
-    // Create an array of the Column structure with numberOfValue
+    // Create an array of the Column structure with numberOfValues
 
     
-    Column *columnOfTableCreation = (Column*)malloc(sizeof(Column)*(*numberOfValue));
+    Column *columnOfTableCreation = (Column*)malloc(sizeof(Column)*(*numberOfValues));
     
     // Array initialization
 
-    for (int i = 0; i < *numberOfValue; i++){
+    for (int i = 0; i < *numberOfValues; i++){
         columnOfTableCreation[i].name = malloc(sizeof(char*));
         columnOfTableCreation[i].type = malloc(sizeof(char*));
         columnOfTableCreation[i].defaultValue =  malloc(sizeof(char*));

@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../headers/manage_database.h"
+#include "../headers/manage_table.h"
 #include "../headers/manage_entry.h"
 #include "../headers/special_parsing.h"
 
@@ -22,7 +23,7 @@ void parseEntry(Manager manager, Database* currentDatabase, char* entry) {
         return;
     }
     else if (entry[entryLength-2] != ';'){
-        printf("Please enter a valid SQL command\n");
+        printf("Please enter a valid SQL command.\n");
         printf("Check this website for more information : http://sql.sh/\n");
         return;
     }
@@ -55,7 +56,7 @@ void parseEntry(Manager manager, Database* currentDatabase, char* entry) {
     }
     
     if(numberOfWords == 0){
-        printf("Please enter a valid SQL command\n");
+        printf("Please enter a valid SQL command.\n");
         printf("Check this website for more information : http://sql.sh/\n");
         return;
     }
@@ -128,7 +129,7 @@ void parseEntry(Manager manager, Database* currentDatabase, char* entry) {
     const char *SHOW = "SHOW";
     const char *USE = "USE";
     
-    int numberOfValue = 0;
+    int numberOfValues = 0;
     
     if (strcmp(parsedEntry[0], SELECT) == 0) {
         
@@ -159,14 +160,14 @@ void parseEntry(Manager manager, Database* currentDatabase, char* entry) {
     else if (strcmp(parsedEntry[0], INSERT) == 0) {
         
         char *valuesToParse = parsedEntry[4];
-        char **values = getValuesOfInsert(valuesToParse, &numberOfValue);
+        char **values = getValuesOfInsert(valuesToParse, &numberOfValues);
         
         printf("launch the INSERT INTO function\n");
         printf("name of the table : ");
         printf("%s\n", parsedEntry[2]); // parsedEntry[2] is the table
-        for (int i = 0; i < numberOfValue; i++) {
+        for (int i = 0; i < numberOfValues; i++) {
             printf("values %d :", i+1); // values is the array of values
-            printf(" %s\n", values[i]); // numberOfValue is the number of values in the array
+            printf(" %s\n", values[i]); // numberOfValues is the number of values in the array
         }
     }
     
@@ -212,20 +213,19 @@ void parseEntry(Manager manager, Database* currentDatabase, char* entry) {
         
         else if(strcmp(parsedEntry[1], TABLE) == 0){
             
-            char *valuesToParse = parsedEntry[3];
-            Column *columnOfTableCreation = getValuesOfTableCreation(valuesToParse, &numberOfValue);
-        
-            printf("launch the CREATE TABLE function\n");
-            printf("name of the table : ");
-            printf("%s\n", parsedEntry[2]); // parsedEntry[2] is the name of the table
-            printf("values :\n");
-            for (int i = 0; i < numberOfValue; i++){
-                printf("name : %s\n", columnOfTableCreation[i].name); // columnOfTableCreation is an array of Column structure
-                printf("type : %s\n", columnOfTableCreation[i].type); // numberOfValue is the number of Column structure
-                printf("length : %d\n", columnOfTableCreation[i].length); // For now only 3 fields are fill (name, type and length)
+            if (strcmp(currentDatabase->name, "") == 0) {
+                // no database selected, stop here
+                printf("Oops! No database selected.\n");
+                return;
             }
             
-            free(columnOfTableCreation);
+            Column *newColumns = getValuesOfTableCreation(parsedEntry[3], &numberOfValues);
+            Table newTable = {parsedEntry[2], numberOfValues, 0, newColumns};
+            Database database = {currentDatabase->name};
+            
+            createTable(database, newTable);
+            
+            free(newColumns);
         }
     }
     
@@ -243,7 +243,17 @@ void parseEntry(Manager manager, Database* currentDatabase, char* entry) {
             }
         }
         else if (strcmp(parsedEntry[1], TABLE) == 0) {
-            printf("dropTable(%s);\n", parsedEntry[2]); // parsedEntry[2] is the name of the table
+            
+            if (strcmp(currentDatabase->name, "") == 0) {
+                // no database selected, stop here
+                printf("Oops! No database selected.\n");
+                return;
+            }
+            
+            Table oldTable = {parsedEntry[2]};
+            Database database = {currentDatabase->name};
+            
+            dropTable(database, oldTable);
         }
         
     }
@@ -260,7 +270,16 @@ void parseEntry(Manager manager, Database* currentDatabase, char* entry) {
     }
     
     else if(strcmp(parsedEntry[0], USE) == 0){
-        printf("use(%s);\n", parsedEntry[1]);
+        
+        Database database = {parsedEntry[1]};
+        
+        if (!isDatabase(database)) {
+            printf("Oops! Database `%s` doesn't exist.\n", database.name);
+            return;
+        }
+        
+        currentDatabase->name = database.name;
+        printf("Current database is now: `%s`.\n", currentDatabase->name);
     }
     
     else{

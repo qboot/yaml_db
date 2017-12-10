@@ -134,3 +134,18 @@ IntArray appendValueToIntArray(IntArray array, int value)
         return newArray;
     }
 }
+
+//
+// Check if value `value` is in array `array`
+// Return 1 if true, else 0
+//
+int isInArray(char **array, int arraySize, char *value)
+{
+    for (int i = 0; i < arraySize; ++i) {
+        if (strcmp(array[i], value) == 0) {
+            return 1;
+        }
+    }
+    
+    return 0;
+}

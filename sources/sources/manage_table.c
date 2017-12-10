@@ -16,14 +16,16 @@
 //
 // Create a new table
 //
-void createTable(const Database database, const Table table)
+int createTable(const Database database, const Table table)
 {
     if (isDatabase(database) == 0) {
-        return;
+        printf("Oops! Database `%s` doesn't exist.\n", database.name);
+        return 0;
     }
     
     if (hasTable(database, table) != 0) {
-        return;
+        printf("Oops! Table `%s` already exists.\n", table.name);
+        return 0;
     }
     
     char *databasePath = createFilePath(database.name);
@@ -43,19 +45,30 @@ void createTable(const Database database, const Table table)
     fclose(file);
     free(databasePath);
     
-    createTableStructure(database, table);
+    if (createTableStructure(database, table)) {
+        printf("New table `%s` created!\n", table.name);
+        return 1;
+    }
+    
+    return 0;
 }
 
 //
 // Drop an existing table
 //
-void dropTable(const Database database, const Table table)
+int dropTable(const Database database, const Table table)
 {
+    if (isDatabase(database) == 0) {
+        printf("Oops! Database `%s` doesn't exist.\n", database.name);
+        return 0;
+    }
+    
     int lineNumber = hasTable(database, table);
     
     // if table doesn't exist, stop here
     if (lineNumber == 0) {
-        return;
+        printf("Oops! Table `%s` doesn't exist.\n", table.name);
+        return 0;
     }
     
     removeFileInDir(table.name, database.name);
@@ -63,6 +76,8 @@ void dropTable(const Database database, const Table table)
     char *databasePath = createFilePath(database.name);
     removeLine(databasePath, lineNumber);
     free(databasePath);
+    printf("Table `%s` dropped!\n", table.name);
+    return 1;
 }
 
 //
@@ -81,7 +96,7 @@ int hasTable(const Database database, const Table table)
 //
 // Create table structure with all columns
 //
-void createTableStructure(const Database database, const Table table)
+int createTableStructure(const Database database, const Table table)
 {
     char *tablePath = createFileInDir(table.name, database.name);
     
@@ -96,25 +111,29 @@ void createTableStructure(const Database database, const Table table)
     fputs(TAB "struct:\n", file);
     
     int i = 0;
+    int error = 0;
+    char *allowedTypes[] = {"int", "float", "string", "char"};
+    int allowedTypesSize = 4;
     
     for (i = 0; i < table.nbColumns; ++i) {
         
         if (!table.columns[i].name || strcmp("", table.columns[i].name) == 0) {
-            // name can't be null or empty
-            // delete table
-            // return error
-            exit(EXIT_FAILURE);
+            printf("Please check that all your columns have a valid name.\n");
+            error = 1;
+            break;
         }
         
-        if (!table.columns[i].type || strcmp("", table.columns[i].type) == 0) {
-            // type can't be null or empty
-            // delete table
-            // return error
-            exit(EXIT_FAILURE);
+        if (
+            !table.columns[i].type ||
+            strcmp("", table.columns[i].type) == 0 ||
+            !isInArray(allowedTypes, allowedTypesSize, table.columns[i].type)
+        ) {
+            printf("Please check that all your columns have a valid type.\n");
+            printf("Allowed types are : `int`, `float`, `string` and `char`.\n");
+            error = 1;
+            break;
         }
         
-        // check type is one of four available type
-        // make a function do simplify all this stuff
         fprintf(file, TAB TAB "%s:\n", table.columns[i].name);
         fprintf(file, TAB TAB TAB "type: %s\n", table.columns[i].type);
     }
@@ -124,11 +143,13 @@ void createTableStructure(const Database database, const Table table)
     
     free(tablePath);
     
-    // then improve the proto with check if two column has the same name
-    // validate that a col name is correct
-    // has column ?
-    // find good pos in file
-    // name and type are required
+    // error thrown, drop the table
+    if (error) {
+        dropTable(database, table);
+        return 0;
+    }
+    
+    return 1;
 }
 
 //

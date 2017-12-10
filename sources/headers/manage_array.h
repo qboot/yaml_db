@@ -12,6 +12,7 @@
 
 void trimSpaces(char *string);
 void trimLeadingSpaces(char *string);
+int isInArray(char **array, int arraySize, char *value);
 StringArray manageStringArray(StringArray array);
 StringArray appendValueToStringArray(StringArray, char *value);
 IntArray manageIntArray(IntArray array);

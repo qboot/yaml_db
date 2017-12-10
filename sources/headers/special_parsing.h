@@ -11,8 +11,8 @@
 
 #include "config.h"
 
-char ** getValuesOfInsert(char *valueToParse, int *numberOfValue);
-Column * getValuesOfTableCreation(char *valueToParse, int *numberOfValue);
-void replaceQuotes(int numberOfValue, char** valuesOfInsert);
+char ** getValuesOfInsert(char *valueToParse, int *numberOfValues);
+Column * getValuesOfTableCreation(char *valueToParse, int *numberOfValues);
+void replaceQuotes(int numberOfValues, char** valuesOfInsert);
 
 #endif
