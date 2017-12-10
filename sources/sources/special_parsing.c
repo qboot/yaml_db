@@ -10,7 +10,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../headers/special_parsing.h"
-#include "../headers/conf.h"
 
 // Parsing of the INSERT INTO values
 

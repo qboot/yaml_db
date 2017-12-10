@@ -6,4 +6,11 @@
 //  Copyright © 2017 Groupe 16. All rights reserved.
 //
 
+#ifndef MAIN
+#define MAIN
+
+#include "config.h"
+
 void entryLoop(void);
+
+#endif

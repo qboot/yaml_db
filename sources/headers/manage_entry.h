@@ -5,5 +5,11 @@
 //  Description: Header of manage_entry.c
 //
 
-void parseEntry(char* entry);
+#ifndef MANAGE_ENTRY
+#define MANAGE_ENTRY
 
+#include "config.h"
+
+void parseEntry(Manager manager, Database* currentDatabase, char* entry);
+
+#endif

@@ -9,9 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
-#include "../headers/config.h"
 #include "../headers/main.h"
+#include "../headers/manage_file.h"
 #include "../headers/manage_entry.h"
 
 int main(int argc, const char * argv[]) {
@@ -27,21 +26,26 @@ int main(int argc, const char * argv[]) {
     
     entryLoop();
     
-    printf("Byebye !\n");
+    printf("\nClosing yaml_db project... Bye !\n");
     
     return 0;
 }
 
-void entryLoop(){
+void entryLoop() {
+    
+    Manager manager = {DB_FILENAME, createFile(DB_FILENAME)};
+    Database* currentDatabase = malloc(sizeof(Database));
+    currentDatabase->name = "";
     
     char entry[200] = "";
-    char *exit = "exit";
+    char *exit = "exit\n";
     
-    do{
-        printf("Myaml > ");
+    do {
+        printf("yaml_db > ");
         fgets(entry, sizeof(entry), stdin);
-        parseEntry(entry);
-        
-    }while(strcmp(entry, exit));
+        parseEntry(manager, currentDatabase, entry);
+    } while (strcmp(entry, exit));
     
+    free(currentDatabase);
+    free(manager.path);
 }

@@ -8,14 +8,13 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "../headers/manage_database.h"
 #include "../headers/manage_entry.h"
 #include "../headers/special_parsing.h"
-#include "../headers/conf.h"
-
 
 // Global parsing
 
-void parseEntry(char* entry){
+void parseEntry(Manager manager, Database* currentDatabase, char* entry) {
     
     unsigned long entryLength = strlen(entry);
     
@@ -200,7 +199,13 @@ void parseEntry(char* entry){
         // CREATE DATABASE
         
         if(strcmp(parsedEntry[1], DATABASE) == 0){
-            printf("createDatabase(%s);\n", parsedEntry[2]); // parsedEntry[2] is the name of the database
+            Database newDatabase = {parsedEntry[2]}; // parsedEntry[2] is the name of the database
+            
+            if (createDatabase(manager, newDatabase)) {
+                // if success, change the current database to the new one
+                currentDatabase->name = newDatabase.name;
+                printf("Current database is now: `%s`.\n", currentDatabase->name);
+            }
         }
         
         // CREATE TABLE ( Primary key, not null, auto increment not supported yet ) WIP
@@ -227,10 +232,18 @@ void parseEntry(char* entry){
     else if(strcmp(parsedEntry[0], DROP) == 0){
         
         if (strcmp(parsedEntry[1], DATABASE) == 0) {
-            printf("dropDatabase(%s);\n", parsedEntry[2]); // parsedEntry[2] is the name of the database
+            Database oldDatabase = {parsedEntry[2]}; // parsedEntry[2] is the name of the database
+            
+            if (dropDatabase(manager, oldDatabase)) {
+                // if success && currentDatabase is dropped database
+                // change the current database to null
+                if (strcmp(currentDatabase->name, oldDatabase.name) == 0) {
+                    currentDatabase->name = "";
+                }
+            }
         }
         else if (strcmp(parsedEntry[1], TABLE) == 0) {
-            printf("dropTable(%s);\n", parsedEntry[2]); // parsedEntry[2] is the name of the database
+            printf("dropTable(%s);\n", parsedEntry[2]); // parsedEntry[2] is the name of the table
         }
         
     }
@@ -251,7 +264,7 @@ void parseEntry(char* entry){
     }
     
     else{
-        printf("Please enter a valid SQL command\n");
+        printf("Please enter a valid SQL command.\n");
         printf("Check this website for more information : http://sql.sh/\n");
     }
     
