@@ -17,14 +17,8 @@
 #include "../headers/read_table.h"
 #include "../headers/read_file.h"
 
-<<<<<<< HEAD
 static void entryLoop(void);
 static int isExitCommand(char *command);
-=======
-#include <ctype.h>
-#include "../headers/read_table.h"
-#include "../headers/test_read_table.h"
->>>>>>> Add functions to read a table and print columnName and datas
 
 int main(int argc, const char *argv[])
 {
