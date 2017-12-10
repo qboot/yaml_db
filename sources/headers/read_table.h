@@ -12,14 +12,10 @@
 #include <stdio.h>
 #include "config.h"
 
-void findAllRecords(char* db_name, char* table_name);
-void findSpecificRecords(char *db_name, char *table_name, char* column_name, char *record_value);
-char** readColumnName(FILE* f, int *columnNameSize);
-int filesFound(char *db_name, char *table_name, char *table_file);
-char** readData(FILE* f, int *dataSize);
-void parseData(char **data, int numberOfData, Table *currentTable);
+void parseData(StringArray data, Table *currentTable);
 void printResult(char **column_name, int *columnNameSize, Table *currentTable);
 int searchColumnPlace(Table *currentTable, char *columnName);
-int searchSpecificData(Table *currentTable, int columnPlace, char *dataSearched);
+IntArray searchSpecificData(Table *currentTable, int columnPlace, char *dataSearched);
+IntArray searchData(Table *currentTable, int columnPlace, char *dataSearched);
 #endif
 

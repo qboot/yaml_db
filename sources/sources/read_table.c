@@ -17,65 +17,28 @@
 #include "../headers/config.h"
 #include "../headers/manage_file.h"
 #include "../headers/manage_database.h"
+#include "../headers/manage_array.h"
 
-/**
- // Read the data for a given database name 'db_name'
- // and a 'name'
- **/
-void findAllRecords(char* db_name, char* table_name)
-{
-    char *table_file = createFilePath(table_name);
-    
-    if(!filesFound(db_name, table_name, table_file)) {
-        return;
-    }
-    
-    Table currentTable;
-    
-    FILE* f = fopen(table_file, "r");
-    
-    int columnNameSize = 0;
-    char **columnName = readColumnName(f, &columnNameSize);
-    
-    currentTable.columns = malloc(sizeof(Column) * columnNameSize);
-    currentTable.nbColumns = columnNameSize;
-    
-    for (int i = 0; i < columnNameSize; i++) {
-        currentTable.columns[i].name = columnName[i];
-    }
-    
-    int dataSize = 0;
-    char **data = readData(f, &dataSize);
-
-
-    parseData(data, dataSize, &currentTable);
-    
-    printResult(columnName, &columnNameSize, &currentTable);
-    // func free table to clen memory
-    
-    
-    return;
-}
 
 /**
  // For a given data, insert into a Table 'currentTable'
  // value in Row and Cell
  **/
-void parseData(char **data, int numberOfData, Table *currentTable)
+void parseData(StringArray data, Table *currentTable)
 {
     // allocate space for rows.
-    currentTable->rows = malloc(numberOfData);
-    currentTable->nbRows = numberOfData;
+    currentTable->rows = malloc(data.size);
+    currentTable->nbRows = data.size;
     
-    for (int i = 0; i < numberOfData; i++) {
+    for (int i = 0; i < data.size; i++) {
         
         char *currentRow = malloc(sizeof(char) * STRING_SIZE);
-        strcpy(currentRow, data[i] + 3);
+        strcpy(currentRow, data.data[i] + 3);
 
         char *token;
         token = strtok(currentRow, ",");
         
-        currentTable->rows[i].cells = malloc(sizeof(Cell) * currentTable->nbRows);
+        currentTable->rows[i].cells = malloc(sizeof(Cell) * currentTable->nbColumns);
         
         for (int j = 0; j < currentTable->nbColumns && token != NULL; j++) {
             
@@ -92,98 +55,6 @@ void parseData(char **data, int numberOfData, Table *currentTable)
 }
 
 /**
- // Read the data for a given database name 'db_name'
- // and a given 'tbale_name',
- // and print result where is a given 'record_value'
- **/
-void findSpecificRecords(char* db_name, char* table_name, char* column_name, char* record_value)
-{
-    char *table_file = createFilePath(table_name);
-    
-    if (!filesFound(db_name, table_name, table_file)) {
-        return;
-    }
-    
-    FILE* f = fopen(table_file, "r");
-    
-    char temp[STRING_SIZE];
-    int columnNameSize = 0;
-
-    char **columnName = readColumnName(f, &columnNameSize);
-    
-    while ((fgets(temp, STRING_SIZE, f) != NULL) && (strstr(temp, "-") != NULL)) {
-        if ((strstr(temp, "        ")) != NULL && (strstr(temp, "            ")) == NULL && (strstr(temp, record_value)) != NULL) {
-            char temp2[STRING_SIZE];
-            strcpy(temp2, temp + 11);
-            char *token;
-            token = strtok(temp2, ", ");
-            while (token != NULL) {
-                printf("%s |", token);
-                token = strtok(NULL, ",");
-            }
-        }
-    }
-    
-    for (int i = 0; i < columnNameSize; i++) {
-        free(columnName[i]);
-    }
-    free(columnName);
-    
-}
-
-
-
-/**
- // Read the data in a given FILE* 'f'
- // and return an array of string with the column name
- **/
-char** readColumnName(FILE* f, int *columnNameSize)
-{
-    
-    char **columnName = malloc(10 * sizeof(char *));
-
-    char temp[STRING_SIZE];
-    
-    int i = 0;
-    while ((fgets(temp, STRING_SIZE, f) != NULL) && (strstr(temp, "data") == NULL)) {
-        if ((strstr(temp, "        ")) != NULL && (strstr(temp, "            ")) == NULL) {
-            temp[strlen(temp)-2] = '\0';
-            columnName[i] = malloc(STRING_SIZE * sizeof(char));
-            strcpy(columnName[i], temp + 8);
-            i++;
-            *columnNameSize += 1;
-        }
-    }
-    
-    return columnName;
-}
-
-/**
- // Read the data in a given FILE* 'f'
- // and return an array of string with the records
- **/
-char** readData(FILE* f, int *dataSize)
-{
-    // update
-    char **data = malloc(50 * sizeof(char *));
-    
-    char temp[STRING_SIZE];
-    
-    int i = 0;
-    while ((fgets(temp, STRING_SIZE, f) != NULL) && (strstr(temp, "-") != NULL)) {
-        if ((strstr(temp, "        ")) != NULL && (strstr(temp, "            ")) == NULL) {
-            temp[strlen(temp)-2] = '\0';
-            data[i] = malloc(STRING_SIZE * sizeof(char));
-            strcpy(data[i], temp + 8);
-            i++;
-            *dataSize += 1;
-        }
-    }
-    
-    return data;
-}
-
-/**
  // Print the result for a given 'column_name and
  // for a given 'table'
  **/
@@ -193,6 +64,14 @@ void printResult(char **column_name, int *columnNameSize, Table *currentTable)
         printf("%s | ", column_name[i]);
     }
     printf("\n");
+    
+    /*
+    
+    for (int i = 0; i < currentTable->nbColumns; i++) {
+        printf("%s | ", currentTable->columns[i]);
+    }
+    
+    */
     
     for (int i = 0; i < currentTable->nbRows; i++) {
         for (int j = 0; j < currentTable->rows[i].nbCells; j++) {
@@ -222,45 +101,50 @@ int searchColumnPlace(Table *currentTable, char *columnName)
 /**
  //     NON TESTER
  //
+ // SQL : Like %...%
  // Search in the currentTable if a the data searched is present at the specific
  // columnPlace
  // return the row number if found, -1 if not
  **/
-int searchSpecificData(Table *currentTable, int columnPlace, char *dataSearched)
+IntArray searchData(Table *currentTable, int columnPlace, char *dataSearched)
 {
+    IntArray rowNumberList = {
+        malloc(ARRAY_CAPACITY * sizeof(int)),
+        0,
+        ARRAY_CAPACITY
+    };
+    
     for (int i = 0; i < currentTable->nbRows; i++) {
         if (strstr(currentTable->rows[i].cells[columnPlace].data, dataSearched) != NULL) {
-            return i;
+           rowNumberList = appendValueToIntArray(rowNumberList, i);
         }
     }
-    return -1;
+    return rowNumberList;
 }
-
-
 
 /**
-// Check if database file exists
-// if table is present in database
-// and if table file exists
-// Return 1 if all exists, else 0
+ //     NON TESTER
+ //
+ // SQL : where
+ // Search in the currentTable if a the data searched is present at the specific
+ // columnPlace
+ // return a IntArray which contain all the row number where the data was find
  **/
-int filesFound(char *db_name, char *table_name, char *table_file)
+IntArray searchSpecificData(Table *currentTable, int columnPlace, char *dataSearched)
 {
-    if (!isFile(db_name)) {
-        printf("the database doesn't exist\n");
-        return 0;
+    IntArray rowNumberList = {
+        malloc(ARRAY_CAPACITY * sizeof(int)),
+        0,
+        ARRAY_CAPACITY
+    };
+    
+    for (int i = 0; i < currentTable->nbRows; i++) {
+        if (strcmp(currentTable->rows[i].cells[columnPlace].data, dataSearched) == 0) {
+            rowNumberList = appendValueToIntArray(rowNumberList, i);
+        }
     }
     
-    if (!hasProperty(db_name, table_name)) {
-        printf("the table doesn't exist in the database file\n");
-        return 0;
-    }
-    
-
-    if (!isFile(table_file)) {
-        printf("the table file doesn't exist\n");
-        return 0;
-    }
-    
-    return 1;
+    return rowNumberList;
 }
+
+
