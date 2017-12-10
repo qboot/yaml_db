@@ -10,6 +10,9 @@
 #include <string.h>
 #include "../headers/manage_array.h"
 
+static StringArray manageStringArray(StringArray array);
+static IntArray manageIntArray(IntArray array);
+
 //
 // Trim a string : remove all spaces
 //
@@ -28,7 +31,7 @@ void trimSpaces(char *string)
 }
 
 //
-// Trim a string : remove all spaces
+// Trim a string : remove all leading spaces
 //
 void trimLeadingSpaces(char *string)
 {
@@ -42,6 +45,30 @@ void trimLeadingSpaces(char *string)
         
         isBeginning = 0;
         
+        char charToString[] = {string[i], '\0'};
+        strcat(newString, charToString);
+    }
+    
+    strcpy(string, newString);
+}
+
+//
+// Trim a string : remove all trailing spaces
+//
+void trimTrailingSpaces(char *string)
+{
+    char newString[STRING_SIZE] = "";
+    int countSpaces = 0;
+    
+    for (int i = (int) strlen(string)-1; 0 <= i; --i) {
+        if (string[i] != ' ') {
+            break;
+        }
+        
+        ++countSpaces;
+    }
+    
+    for (int i = 0; i < strlen(string)-countSpaces; ++i) {
         char charToString[] = {string[i], '\0'};
         strcat(newString, charToString);
     }

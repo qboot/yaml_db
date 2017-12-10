@@ -21,6 +21,12 @@ int createDatabase(const Manager manager, const Database database)
         return 0;
     }
     
+    // database name is not valid, stop here
+    if (isValidName(database.name) == 0) {
+        printf("Database name should only contain 0-9 a-z A-Z and _ characters.\n");
+        return 0;
+    }
+    
     char *databasePath = createFile(database.name);
     createDir(database.name);
     

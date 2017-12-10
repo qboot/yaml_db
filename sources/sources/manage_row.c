@@ -22,11 +22,7 @@ StringArray parseRow(char *row)
     // clean row before manipulate it
     trimLeadingSpaces(row);
     
-    StringArray rowToArray = {
-        malloc(ARRAY_CAPACITY * sizeof(int)),
-        0,
-        ARRAY_CAPACITY
-    };
+    StringArray rowToArray = {malloc(ARRAY_CAPACITY * sizeof(int)), 0, ARRAY_CAPACITY};
     
     int start = 0;
     int isReading = 0;

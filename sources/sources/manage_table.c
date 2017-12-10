@@ -98,6 +98,12 @@ int hasTable(const Database database, const Table table)
 //
 int createTableStructure(const Database database, const Table table)
 {
+    // table name is not valid, stop here
+    if (isValidName(table.name) == 0) {
+        printf("Table name should only contain 0-9 a-z A-Z and _ characters.\n");
+        return 0;
+    }
+    
     char *tablePath = createFileInDir(table.name, database.name);
     
     FILE *file = fopen(tablePath, "a");
@@ -117,7 +123,11 @@ int createTableStructure(const Database database, const Table table)
     
     for (i = 0; i < table.nbColumns; ++i) {
         
-        if (!table.columns[i].name || strcmp("", table.columns[i].name) == 0) {
+        if (
+            !table.columns[i].name ||
+            strcmp("", table.columns[i].name) == 0 ||
+            !isValidName(table.columns[i].name)
+        ) {
             printf("Please check that all your columns have a valid name.\n");
             error = 1;
             break;

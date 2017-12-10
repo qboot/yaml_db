@@ -11,9 +11,13 @@
 #include <ctype.h>
 #include "../headers/main.h"
 #include "../headers/manage_file.h"
+#include "../headers/manage_array.h"
 #include "../headers/manage_entry.h"
 
-int main(int argc, const char * argv[]) {
+static int isExitCommand(char *command);
+
+int main(int argc, const char *argv[])
+{
     
     printf("Welcome to yaml_db project! \n");
     printf("\n");
@@ -32,21 +36,53 @@ int main(int argc, const char * argv[]) {
     return 0;
 }
 
-void entryLoop() {
-    
+//
+// Entry point : will loop on user input and provide entry to parser
+//
+void entryLoop()
+{
     Manager manager = {DB_FILENAME, createFile(DB_FILENAME)};
     Database* currentDatabase = malloc(sizeof(Database));
     currentDatabase->name = "";
     
-    char entry[200] = "";
-    char *exit = "exit\n";
+    char entry[STRING_SIZE] = "";
     
     do {
         printf("\nyaml_db > ");
         fgets(entry, sizeof(entry), stdin);
+        
+        if (isExitCommand(entry)) {
+            break;
+        }
+        
         parseEntry(manager, currentDatabase, entry);
-    } while (strcmp(entry, exit));
+    } while (1);
     
     free(currentDatabase);
     free(manager.path);
+}
+
+//
+// Check if user has typed `exit` command
+//
+int isExitCommand(char *command)
+{
+    char cleanCommand[STRING_SIZE] = "";
+    
+    for (int i = 0; i < strlen(command)-1; ++i) {
+        if (command[i] == ';') {
+            continue;
+        }
+        
+        char charToString[] = {tolower(command[i]), '\0'};
+        strcat(cleanCommand, charToString);
+    }
+    
+    trimTrailingSpaces(cleanCommand);
+    
+    if (strcmp(cleanCommand, "exit") == 0 || strcmp(cleanCommand, "quit") == 0) {
+        return 1;
+    }
+    
+    return 0;
 }
