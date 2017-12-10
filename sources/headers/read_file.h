@@ -13,9 +13,10 @@
 #include "config.h"
 
 void findAllRecords(char* db_name, char* table_name);
-void findSpecificRecords(char *db_name, char *table_name, char* column_name, char *record_value);
-char** readColumnName(FILE* f, int *columnNameSize);
+void findSpecificRecords(char* db_name, char* table_name, char* column_name, char* record_value, char* conditionType);
+void findColumnsName(char* db_name, char* table_name);
+StringArray readColumnsName(FILE* f);
 StringArray readData(FILE* f);
 int filesFound(char *db_name, char *table_name, char *table_file);
 
-#endif /* read_file_h */
+#endif

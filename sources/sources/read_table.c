@@ -58,10 +58,10 @@ void parseData(StringArray data, Table *currentTable)
  // Print the result for a given 'column_name and
  // for a given 'table'
  **/
-void printResult(char **column_name, int *columnNameSize, Table *currentTable)
+void printResult(Table *currentTable)
 {
-    for (int i = 0; i < *columnNameSize; i++) {
-        printf("%s | ", column_name[i]);
+    for (int i = 0; i < currentTable->nbColumns; i++) {
+        printf("%s | ", currentTable->columns[i].name);
     }
     printf("\n");
     
