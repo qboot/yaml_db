@@ -10,6 +10,6 @@
 
 #include "config.h"
 
-void parseEntry(Manager manager, Database* currentDatabase, char* entry);
+void parseEntry(Manager manager, char *currentDatabase, char *entry);
 
 #endif

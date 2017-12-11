@@ -42,8 +42,8 @@ int main(int argc, const char *argv[])
 void entryLoop()
 {
     Manager manager = {DB_FILENAME, createFile(DB_FILENAME)};
-    Database* currentDatabase = malloc(sizeof(Database));
-    currentDatabase->name = "";
+    char *currentDatabase = malloc(sizeof(char)*STRING_SIZE);
+    strcpy(currentDatabase, "");
     
     char entry[STRING_SIZE] = "";
     

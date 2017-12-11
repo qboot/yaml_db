@@ -10,22 +10,25 @@
 #include <stdlib.h>
 #include "../headers/manage_database.h"
 #include "../headers/manage_table.h"
+#include "../headers/manage_row.h"
 #include "../headers/manage_array.h"
 #include "../headers/manage_entry.h"
 #include "../headers/manage_parsing.h"
 
+static void freeArray(StringArray array);
+static void showErrorMessage(void);
+
 //
 // Global parsing of user input
 //
-void parseEntry(Manager manager, Database* currentDatabase, char* entry) {
-    
+void parseEntry(Manager manager, char *currentDatabase, char *entry)
+{
     if (strcmp(entry, "\n") == 0 || strcmp(entry, ";\n") == 0) {
         return;
     }
     
     if (entry[strlen(entry)-2] != ';') {
-        printf("Please enter a valid SQL command.\n");
-        printf("Check this website for more information : http://sql.sh/\n");
+        showErrorMessage();
         return;
     }
     
@@ -45,7 +48,7 @@ void parseEntry(Manager manager, Database* currentDatabase, char* entry) {
             (entry[i] == ')' && entry[i-1] != '\\' && inParenthesis) ||
             (entry[i] == ' ' && !inParenthesis) ||
             (entry[i] == ';' && !inParenthesis)
-        ) {
+            ) {
             
             if (entry[i] == '(' && entry[i-1] != '\\' && !inParenthesis) {
                 inParenthesis = 1;
@@ -68,8 +71,8 @@ void parseEntry(Manager manager, Database* currentDatabase, char* entry) {
     }
     
     if (entryArray.size == 0) {
-        printf("Please enter a valid SQL command.\n");
-        printf("Check this website for more information : http://sql.sh/\n");
+        showErrorMessage();
+        freeArray(entryArray);
         return;
     }
     
@@ -88,7 +91,7 @@ void parseEntry(Manager manager, Database* currentDatabase, char* entry) {
             printf("equals %s\n", entryArray.data[10]); // parsedEntry[10] is the column from second table
         }
         
-         // BASIC SELECT
+        // BASIC SELECT
         
         else {
             printf("launch the SELECT function\n");
@@ -105,18 +108,31 @@ void parseEntry(Manager manager, Database* currentDatabase, char* entry) {
         // TODO: case where no column provided
         // just do an extension of getcolumnsname function which check if number = number
         
-        if (strcmp(currentDatabase->name, "") == 0) {
+        if (strcmp(currentDatabase, "") == 0) {
             // no database selected, stop here
             printf("Oops! No database selected.\n");
+            freeArray(entryArray);
             return;
         }
         
         Row newRows[] = {getRow(entryArray.data[5])};
         Column *columns = getColumns(entryArray.data[3], &nbColumns, 1);
         Table table = {entryArray.data[2], nbColumns, 1, columns, newRows};
-        Database database = {currentDatabase->name};
+        Database database = {currentDatabase};
         
-        printf("launch the INSERT INTO function\n");
+        addRows(database, table);
+        
+        // free memory
+        for (int i = 0; i < nbColumns; ++i) {
+            free(columns[i].name);
+            free(columns[i].type);
+        }
+        free(columns);
+        
+        for (int i = 0; i < newRows[0].nbCells; ++i) {
+            free(newRows[0].cells[i].data);
+        }
+        free(newRows[0].cells);
     }
     
     // DELETE FROM
@@ -143,17 +159,24 @@ void parseEntry(Manager manager, Database* currentDatabase, char* entry) {
         
     }
     
-    else if(strcmp(entryArray.data[0], "CREATE") == 0){
+    else if (strcmp(entryArray.data[0], "CREATE") == 0) {
         
         // CREATE DATABASE
         
         if (strcmp(entryArray.data[1], "DATABASE") == 0) {
+            
+            if (strcmp(entryArray.data[2], "") == 0) {
+                showErrorMessage();
+                freeArray(entryArray);
+                return;
+            }
+            
             Database newDatabase = {entryArray.data[2]}; // parsedEntry[2] is the name of the database
             
             if (createDatabase(manager, newDatabase)) {
                 // if success, change the current database to the new one
-                currentDatabase->name = newDatabase.name;
-                printf("Current database is now: `%s`.\n", currentDatabase->name);
+                strcpy(currentDatabase, newDatabase.name);
+                printf("Current database is now: `%s`.\n", currentDatabase);
             }
         }
         
@@ -162,15 +185,24 @@ void parseEntry(Manager manager, Database* currentDatabase, char* entry) {
         
         else if (strcmp(entryArray.data[1], "TABLE") == 0) {
             
-            if (strcmp(currentDatabase->name, "") == 0) {
+            
+            if (strcmp(entryArray.data[2], "") == 0 || strcmp(entryArray.data[3], "") == 0) {
+                showErrorMessage();
+                freeArray(entryArray);
+                return;
+            }
+            
+            if (strcmp(currentDatabase, "") == 0) {
                 // no database selected, stop here
                 printf("Oops! No database selected.\n");
+                freeArray(entryArray);
                 return;
             }
             
             Column *newColumns = getColumns(entryArray.data[3], &nbColumns, 0);
             Table newTable = {entryArray.data[2], nbColumns, 0, newColumns};
-            Database database = {currentDatabase->name};
+            
+            Database database = {currentDatabase};
             
             createTable(database, newTable);
             
@@ -190,21 +222,22 @@ void parseEntry(Manager manager, Database* currentDatabase, char* entry) {
             if (dropDatabase(manager, oldDatabase)) {
                 // if success && currentDatabase is dropped database
                 // change the current database to null
-                if (strcmp(currentDatabase->name, oldDatabase.name) == 0) {
-                    currentDatabase->name = "";
+                if (strcmp(currentDatabase, oldDatabase.name) == 0) {
+                    strcpy(currentDatabase, "");
                 }
             }
         }
         else if (strcmp(entryArray.data[1], "TABLE") == 0) {
             
-            if (strcmp(currentDatabase->name, "") == 0) {
+            if (strcmp(currentDatabase, "") == 0) {
                 // no database selected, stop here
                 printf("Oops! No database selected.\n");
+                freeArray(entryArray);
                 return;
             }
             
             Table oldTable = {entryArray.data[2]};
-            Database database = {currentDatabase->name};
+            Database database = {currentDatabase};
             
             dropTable(database, oldTable);
         }
@@ -222,26 +255,44 @@ void parseEntry(Manager manager, Database* currentDatabase, char* entry) {
         
     }
     
-    else if (strcmp(entryArray.data[0], "USE") == 0){
+    else if (strcmp(entryArray.data[0], "USE") == 0) {
         
         Database database = {entryArray.data[1]};
         
         if (!isDatabase(database)) {
             printf("Oops! Database `%s` doesn't exist.\n", database.name);
+            freeArray(entryArray);
             return;
         }
         
-        currentDatabase->name = database.name;
-        printf("Current database is now: `%s`.\n", currentDatabase->name);
+        strcpy(currentDatabase, database.name);
+        printf("Current database is now: `%s`.\n", currentDatabase);
     }
     
-    else{
-        printf("Please enter a valid SQL command.\n");
-        printf("Check this website for more information : http://sql.sh/\n");
+    else {
+        showErrorMessage();
     }
     
-    for (int i = 0; i < entryArray.size; ++i) {
-        free(entryArray.data[i]);
-    }
-    free(entryArray.data);
+    freeArray(entryArray);
 }
+
+//
+// Free memory for a given StringArray `array`
+//
+void freeArray(StringArray array)
+{
+    for (int i = 0; i < array.size; ++i) {
+        free(array.data[i]);
+    }
+    free(array.data);
+}
+
+//
+// Print default error message : invalid SQL command
+//
+void showErrorMessage()
+{
+    printf("Please enter a valid SQL command.\n");
+    printf("Check this website for more information : http://sql.sh/\n");
+}
+
