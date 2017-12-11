@@ -16,5 +16,8 @@ void trimTrailingSpaces(char *string);
 int isInArray(char **array, int arraySize, char *value);
 StringArray appendValueToStringArray(StringArray, char *value);
 IntArray appendValueToIntArray(IntArray array, int value);
+void appendToStringArray(StringArray *array, char *value);
+StringArray* createStringArray(void);
+void freeStringArray(StringArray *array);
 
 #endif

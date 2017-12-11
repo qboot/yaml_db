@@ -19,6 +19,28 @@ static int isExitCommand(char *command);
 int main(int argc, const char *argv[])
 {
     
+//    StringArray *entryArray = createStringArray();
+//
+//    char string[] = "super string";
+//    appendToStringArray(entryArray, string);
+//
+//    char string2[] = "waouh 2";
+//    appendToStringArray(entryArray, string2);
+//
+//    char string3[] = "fail me 2";
+//    appendToStringArray(entryArray, string3);
+//
+//    for (int i = 0; i < entryArray->size; ++i) {
+//        printf("%s\n", entryArray->data[i]);
+//        printf("%d\n", entryArray->size);
+//        printf("%d\n", entryArray->capacity);
+//    }
+//
+//    freeStringArray(entryArray);
+//
+//    exit(EXIT_FAILURE);
+    
+    
     printf("Welcome to yaml_db project! \n");
     printf("\n");
     printf("----------------------------\n");

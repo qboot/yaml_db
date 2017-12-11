@@ -77,6 +77,7 @@ void trimTrailingSpaces(char *string)
 }
 
 //
+// @deprecated
 // Allocate more space to a given string array, depending of size and capacity
 // Return an array of char
 //
@@ -103,6 +104,7 @@ StringArray manageStringArray(StringArray array)
 }
 
 //
+// @deprecated
 // Append a value to a given string array
 // Return an array of char
 //
@@ -123,6 +125,7 @@ StringArray appendValueToStringArray(StringArray array, char *value)
 }
 
 //
+// @deprecated
 // Allocate more space to a given int array, depending of size and capacity
 // Return an array of int
 //
@@ -145,6 +148,7 @@ IntArray manageIntArray(IntArray array)
 }
 
 //
+// @deprecated
 // Append a value to a given int array
 // Return an array of int
 //
@@ -175,4 +179,42 @@ int isInArray(char **array, int arraySize, char *value)
     }
     
     return 0;
+}
+
+StringArray* createStringArray()
+{
+    StringArray *array = malloc(sizeof(StringArray));
+    array->data = malloc(sizeof(char *) * ARRAY_CAPACITY);
+    array->size = 0;
+    array->capacity = ARRAY_CAPACITY;
+    
+    for (int i = 0; i < array->capacity; ++i) {
+        array->data[i] = malloc(sizeof(char) * STRING_SIZE);
+    }
+    return array;
+}
+
+void appendToStringArray(StringArray *array, char *value)
+{
+    if (array->size == array->capacity) {
+        array->capacity *= 3;
+        array->data = realloc(array->data, sizeof(char *) * array->capacity);
+        for (int i = array->size; i < array->capacity; ++i) {
+            array->data[i] = malloc(sizeof(char) * STRING_SIZE);
+        }
+    }
+    
+    strcpy(array->data[array->size], value);
+    ++array->size;
+}
+
+//
+// Free memory for a given StringArray `array` pointer
+//
+void freeStringArray(StringArray *array)
+{
+    for (int i = 0; i < array->capacity; ++i) { // or size ????
+        free(array->data[i]);
+    }
+    free(array);
 }

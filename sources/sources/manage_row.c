@@ -62,9 +62,21 @@ StringArray parseRow(char *row)
 //
 // Add row(s) to a given table
 //
-void addRows(const Database database, const Table table)
+int addRows(const Database database, const Table table)
 {
+    if (!hasTable(database, table)) {
+        printf("Oops! Table `%s` doesn't exist.\n", table.name);
+        return 0;
+    }
+    
     StringArray columnNames = getColumnNames(database, table);
+    
+    if (columnNames.size != table.rows[0].nbCells && table.nbColumns == 0) {
+        printf("Please provide a value for each column or use explicit mode.\n");
+        return 0;
+    }
+    
+    int isImplicit = (table.nbColumns == 0) ? 1 : 0;
     
     char newRows[table.nbRows][STRING_SIZE];
     int newRowsSize = 0;
@@ -77,6 +89,15 @@ void addRows(const Database database, const Table table)
         strcat(row, "- [");
         
         for (int j = 0; j < columnNames.size; ++j) {
+            
+            if (isImplicit) {
+                // we should simply fill all values of the row
+                strcat(row, "\"");
+                strcat(row, table.rows[i].cells[j].data);
+                strcat(row, "\",");
+                continue;
+            }
+            
             int found = 0;
             
             for (int k = 0; k < table.nbColumns;  ++k) {
@@ -85,7 +106,7 @@ void addRows(const Database database, const Table table)
                 }
                 
                 strcat(row, "\"");
-                strcat(row, table.rows[i].cells[j].data);
+                strcat(row, table.rows[i].cells[k].data);
                 strcat(row, "\",");
                 found = 1;
                 break;
@@ -127,6 +148,9 @@ void addRows(const Database database, const Table table)
     }
     free(columnNames.data);
     free(tablePath);
+    
+    printf("New row added to `%s`.\n", table.name);
+    return 1;
 }
 
 //
@@ -200,6 +224,16 @@ void updateRows(
                 }
             }
         }
+        
+        /****
+        
+        si c'est un OR et qu'il est valide, peu importe le résultat précédent, cela devient 1
+        si c'est un OR et qu'il est faux, on garde le résultat précédent
+        si c'est un AND et qu'il est valide, si le résultat précédent est bon, on reste à 1
+        si c'est un AND et qu'il est valide, si le résultat précédent est faux, on reste à 0
+        si c'est un AND et qu'il est faux, on passe à 0
+         
+        ****/
         
         if (needUpdate) {
             // create the new line
