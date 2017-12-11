@@ -205,53 +205,6 @@ int hasColumn(const Database database, const Table table, const Column column)
 }
 
 //
-// Get all column names of a given table
-// Return them in an array of char
-//
-StringArray getColumnNames(const Database database, const Table table)
-{
-    char *tablePath = createFileInDirPath(table.name, database.name);
-    
-    StringArray columnNames = {
-        malloc(ARRAY_CAPACITY * sizeof(int)),
-        0,
-        ARRAY_CAPACITY
-    };
-    
-    FILE *file = fopen(tablePath, "r");
-    
-    if (file == NULL) {
-        free(tablePath);
-        printf("fopen() failed in file %s at line #%d\n", __FILE__, __LINE__);
-        exit(EXIT_FAILURE);
-    }
-    
-    char line[STRING_SIZE] = "";
-    
-    while (fgets(line, STRING_SIZE, file) != NULL) {
-        
-        if (strcmp(line, TAB "data:\n") == 0 || strcmp(line, TAB "data: ~\n") == 0) {
-            break;
-        }
-        
-        if (strstr(line, TAB TAB) == NULL || strstr(line, TAB TAB TAB) != NULL) {
-            continue;
-        }
-        
-        // trim spaces + remove final ':' char
-        line[strlen(line)-2] = '\0';
-        trimSpaces(line);
-        
-        columnNames = appendValueToStringArray(columnNames, line);
-    }
-    
-    fclose(file);
-    free(tablePath);
-    
-    return columnNames;
-}
-
-//
 // Remove ~ in `data: ~` before inserting data
 //
 void removeDataTilde(const Database database, const Table table)
@@ -289,4 +242,72 @@ void removeDataTilde(const Database database, const Table table)
     replaceLine(tablePath, lineNumber, TAB "data:\n");
     
     free(tablePath);
+}
+
+//
+// Get column names & types from a given table
+// Return them in an array of Column
+//
+Column* getAllColumns(const Database database, const Table table, int *nbColumns)
+{
+    char *tablePath = createFileInDirPath(table.name, database.name);
+    
+    StringArray *columnNames = createStringArray();
+    StringArray *columnTypes = createStringArray();
+    
+    FILE *file = fopen(tablePath, "r");
+    
+    if (file == NULL) {
+        free(tablePath);
+        printf("fopen() failed in file %s at line #%d\n", __FILE__, __LINE__);
+        exit(EXIT_FAILURE);
+    }
+    
+    char line[STRING_SIZE] = "";
+    
+    while (fgets(line, STRING_SIZE, file) != NULL) {
+        
+        if (strcmp(line, TAB "data:\n") == 0 || strcmp(line, TAB "data: ~\n") == 0) {
+            break;
+        }
+        
+        if (strstr(line, TAB TAB) == NULL || strstr(line, TAB TAB TAB) != NULL) {
+            
+            // get column types
+            char *result = strstr(line, "type: ");
+            if (result != NULL) {
+                int beginning = (int) (result - line + 6);
+                int length = (int) strlen(line) - beginning;
+                char type[STRING_SIZE] = "";
+                strncpy(type, line+beginning, length);
+                trimSpaces(type);
+                appendToStringArray(columnTypes, type);
+            }
+            
+            continue;
+        }
+        
+        // trim spaces + remove final ':' char
+        line[strlen(line)-2] = '\0';
+        trimSpaces(line);
+        appendToStringArray(columnNames, line);
+    }
+    
+    fclose(file);
+    free(tablePath);
+    
+    Column *columns = malloc(sizeof(Column) * columnNames->size);
+    *nbColumns = columnNames->size;
+    
+    for (int i = 0; i < *nbColumns; ++i) {
+        columns[i].name = malloc(sizeof(char) * STRING_SIZE);
+        columns[i].type = malloc(sizeof(char) * STRING_SIZE);
+        strcpy(columns[i].name, columnNames->data[i]);
+        strcpy(columns[i].type, columnTypes->data[i]);
+    }
+    
+    freeStringArray(columnTypes);
+    freeStringArray(columnNames);
+    
+    return columns;
 }

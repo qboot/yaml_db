@@ -9,16 +9,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "../headers/main.h"
+#include "../headers/config.h"
 #include "../headers/manage_file.h"
 #include "../headers/manage_array.h"
 #include "../headers/manage_entry.h"
 
+static void entryLoop(void);
 static int isExitCommand(char *command);
 
 int main(int argc, const char *argv[])
 {
-    
     printf("Welcome to yaml_db project! \n");
     printf("\n");
     printf("----------------------------\n");

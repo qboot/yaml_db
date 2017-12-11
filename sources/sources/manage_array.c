@@ -10,6 +10,7 @@
 #include <string.h>
 #include "../headers/manage_array.h"
 
+// @deprecated
 static StringArray manageStringArray(StringArray array);
 static IntArray manageIntArray(IntArray array);
 
@@ -77,6 +78,22 @@ void trimTrailingSpaces(char *string)
 }
 
 //
+// Check if value `value` is in array `array`
+// Return 1 if true, else 0
+//
+int isInArray(char **array, int arraySize, char *value)
+{
+    for (int i = 0; i < arraySize; ++i) {
+        if (strcmp(array[i], value) == 0) {
+            return 1;
+        }
+    }
+    
+    return 0;
+}
+
+//
+// @deprecated
 // Allocate more space to a given string array, depending of size and capacity
 // Return an array of char
 //
@@ -103,6 +120,7 @@ StringArray manageStringArray(StringArray array)
 }
 
 //
+// @deprecated
 // Append a value to a given string array
 // Return an array of char
 //
@@ -123,6 +141,7 @@ StringArray appendValueToStringArray(StringArray array, char *value)
 }
 
 //
+// @deprecated
 // Allocate more space to a given int array, depending of size and capacity
 // Return an array of int
 //
@@ -145,6 +164,7 @@ IntArray manageIntArray(IntArray array)
 }
 
 //
+// @deprecated
 // Append a value to a given int array
 // Return an array of int
 //
@@ -163,16 +183,90 @@ IntArray appendValueToIntArray(IntArray array, int value)
 }
 
 //
-// Check if value `value` is in array `array`
-// Return 1 if true, else 0
+// @new
+// Create a StringArray and malloc it
+// Return a pointer on a StringArray
 //
-int isInArray(char **array, int arraySize, char *value)
+StringArray* createStringArray()
 {
-    for (int i = 0; i < arraySize; ++i) {
-        if (strcmp(array[i], value) == 0) {
-            return 1;
+    StringArray *array = malloc(sizeof(StringArray));
+    array->data = malloc(sizeof(char *) * ARRAY_CAPACITY);
+    array->size = 0;
+    array->capacity = ARRAY_CAPACITY;
+    
+    for (int i = 0; i < array->capacity; ++i) {
+        array->data[i] = malloc(sizeof(char) * STRING_SIZE);
+    }
+    return array;
+}
+
+//
+// @new
+// Create a IntArray and malloc it
+// Return a pointer on a IntArray
+//
+IntArray* createIntArray()
+{
+    IntArray *array = malloc(sizeof(IntArray));
+    array->data = malloc(sizeof(int *) * ARRAY_CAPACITY);
+    array->size = 0;
+    array->capacity = ARRAY_CAPACITY;
+    
+    return array;
+}
+
+//
+// @new
+// Append a value to a StringArray passed by pointer
+//
+void appendToStringArray(StringArray *array, char *value)
+{
+    if (array->size == array->capacity) {
+        array->capacity *= 3;
+        array->data = realloc(array->data, sizeof(char *) * array->capacity);
+        for (int i = array->size; i < array->capacity; ++i) {
+            array->data[i] = malloc(sizeof(char) * STRING_SIZE);
         }
     }
     
-    return 0;
+    strcpy(array->data[array->size], value);
+    ++array->size;
+}
+
+//
+// @new
+// Append a value to a IntArray passed by pointer
+//
+void appendToIntArray(IntArray *array, int value)
+{
+    if (array->size == array->capacity) {
+        array->capacity *= 3;
+        array->data = realloc(array->data, sizeof(int *) * array->capacity);
+    }
+    
+    array->data[array->size] = value;
+    ++array->size;
+}
+
+//
+// @new
+// Free an existing StringArray pointer
+//
+void freeStringArray(StringArray *array)
+{
+    for (int i = 0; i < array->capacity; ++i) {
+        free(array->data[i]);
+    }
+    free(array->data);
+    free(array);
+}
+
+//
+// @new
+// Free an existing IntArray pointer
+//
+void freeIntArray(IntArray *array)
+{
+    free(array->data);
+    free(array);
 }

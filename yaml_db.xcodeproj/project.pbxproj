@@ -55,7 +55,6 @@
 		66A181901FDD70DB002C675F /* manage_parsing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = manage_parsing.h; sourceTree = "<group>"; };
 		66A181911FDD70E4002C675F /* manage_parsing.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = manage_parsing.c; sourceTree = "<group>"; };
 		66A181921FDD70E4002C675F /* manage_entry.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = manage_entry.c; sourceTree = "<group>"; };
-		66A181951FDD739E002C675F /* main.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,7 +120,6 @@
 			isa = PBXGroup;
 			children = (
 				661A35171FB8B14800CAD23F /* config.h */,
-				66A181951FDD739E002C675F /* main.h */,
 				6654B37A1F9D4AAC007EE525 /* manage_file.h */,
 				6654B37B1F9D4ABC007EE525 /* manage_database.h */,
 				661A351A1FB8FE3B00CAD23F /* manage_table.h */,

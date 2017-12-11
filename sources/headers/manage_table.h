@@ -15,7 +15,7 @@ int dropTable(const Database database, const Table table);
 int hasTable(const Database database, const Table table);
 int createTableStructure(const Database database, const Table table);
 int hasColumn(const Database database, const Table table, const Column column);
-StringArray getColumnNames(const Database database, const Table table);
 void removeDataTilde(const Database database, const Table table);
+Column* getAllColumns(const Database database, const Table table, int *nbColumns);
 
 #endif

@@ -15,8 +15,8 @@
 #include "../headers/manage_entry.h"
 #include "../headers/manage_parsing.h"
 
-static void freeArray(StringArray array);
 static void showErrorMessage(void);
+static void explodeCondition(StringArray *conditions, char *string, char *position, char *delimiter);
 
 //
 // Global parsing of user input
@@ -32,7 +32,7 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
         return;
     }
     
-    StringArray entryArray = {malloc(ARRAY_CAPACITY * sizeof(int)), 0, ARRAY_CAPACITY};
+    StringArray *entryArray = createStringArray();
     char entryPart[STRING_SIZE] = "";
     int inParenthesis = 0;
     
@@ -59,7 +59,7 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
             }
             
             if (strcmp(entryPart, "") != 0) {
-                entryArray = appendValueToStringArray(entryArray, entryPart);
+                appendToStringArray(entryArray, entryPart);
                 strcpy(entryPart, "\0");
             }
             
@@ -70,54 +70,56 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
         strcat(entryPart, charToString);
     }
     
-    if (entryArray.size == 0) {
+    if (entryArray->size < 2) {
         showErrorMessage();
-        freeArray(entryArray);
         return;
     }
     
     int nbColumns = 0;
     
-    if (strcmp(entryArray.data[0], "SELECT") == 0) {
+    if (strcmp(entryArray->data[0], "SELECT") == 0) {
         
         // INNER JOIN SELECT
         
-        if (entryArray.size > 4) {
+        if (entryArray->size > 4) {
             printf("launch the SELECT function with an INNER JOIN\n");
-            printf("select : %s\n", entryArray.data[1]); // parsedEntry[1] is what to select
-            printf("from table : %s\n", entryArray.data[3]); // parsedEntry[3] is the first table
-            printf("join with : %s\n", entryArray.data[6]); // parsedEntry[6] is the second table
-            printf("on : %s ", entryArray.data[8]); // parsedEntry[8] is the column from first table
-            printf("equals %s\n", entryArray.data[10]); // parsedEntry[10] is the column from second table
+            printf("select : %s\n", entryArray->data[1]); // parsedEntry[1] is what to select
+            printf("from table : %s\n", entryArray->data[3]); // parsedEntry[3] is the first table
+            printf("join with : %s\n", entryArray->data[6]); // parsedEntry[6] is the second table
+            printf("on : %s ", entryArray->data[8]); // parsedEntry[8] is the column from first table
+            printf("equals %s\n", entryArray->data[10]); // parsedEntry[10] is the column from second table
         }
         
         // BASIC SELECT
         
         else {
             printf("launch the SELECT function\n");
-            printf("select : %s\n", entryArray.data[1]); // parsedEntry[1] is what to select
-            printf("from table : %s\n", entryArray.data[3]); // parsedEntry[3] is the table
+            printf("select : %s\n", entryArray->data[1]); // parsedEntry[1] is what to select
+            printf("from table : %s\n", entryArray->data[3]); // parsedEntry[3] is the table
         }
         
     }
     
     // INSERT INTO
     
-    else if (strcmp(entryArray.data[0], "INSERT") == 0 && strcmp(entryArray.data[1], "INTO") == 0) {
-        
-        // TODO: case where no column provided
-        // just do an extension of getcolumnsname function which check if number = number
+    else if (strcmp(entryArray->data[0], "INSERT") == 0 && strcmp(entryArray->data[1], "INTO") == 0) {
         
         if (strcmp(currentDatabase, "") == 0) {
-            // no database selected, stop here
             printf("Oops! No database selected.\n");
-            freeArray(entryArray);
+            freeStringArray(entryArray);
             return;
         }
         
-        Row newRows[] = {getRow(entryArray.data[5])};
-        Column *columns = getColumns(entryArray.data[3], &nbColumns, 1);
-        Table table = {entryArray.data[2], nbColumns, 1, columns, newRows};
+        if (entryArray->size < 6 && entryArray->size != 4) {
+            showErrorMessage();
+            freeStringArray(entryArray);
+            return;
+        }
+
+        // check if explicit column names have been passed
+        Row newRows[] = {(entryArray->size == 4) ? getRow(entryArray->data[3]) : getRow(entryArray->data[5])};
+        Column *columns = (entryArray->size == 4) ? NULL : getColumns(entryArray->data[3], &nbColumns, 1);
+        Table table = {entryArray->data[2], nbColumns, 1, columns, newRows};
         Database database = {currentDatabase};
         
         addRows(database, table);
@@ -137,41 +139,140 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
     
     // DELETE FROM
     
-    else if (strcmp(entryArray.data[0], "DELETE") == 0) {
-        printf("launch the DELETE FROM function\n");
-        printf("name of the table : %s\n", entryArray.data[2]); // parsedEntry[2] is the table
-        printf("Column : %s\n", entryArray.data[4]); // parsedEntry[4] is the column
-        printf("Operator : %s\n", entryArray.data[5]); // parsedEntry[5] is the operator
-        printf("Value : %s\n", entryArray.data[6]); // parsedEntry[6] is the value to check
+    else if (strcmp(entryArray->data[0], "DELETE") == 0 && strcmp(entryArray->data[1], "FROM") == 0) {
+
+        if (strcmp(currentDatabase, "") == 0) {
+            printf("Oops! No database selected.\n");
+            freeStringArray(entryArray);
+            return;
+        }
+        
+        if (entryArray->size < 5 && entryArray->size != 3) {
+            showErrorMessage();
+            freeStringArray(entryArray);
+            return;
+        }
+        
+        // if entryArray.size == 3, there is no WHERE clause, delete all rows
+        // freeStringArray
+        // return
+        
+        StringArray *conditionsArray = createStringArray();
+
+        for (int i = 4; i < entryArray->size; ++i) {
+
+            char string[STRING_SIZE] = "";
+            strcat(string, entryArray->data[i]);
+
+            if (strlen(string) < 3) {
+                appendToStringArray(conditionsArray, string);
+                continue;
+            }
+
+            char *isDifferent = strstr(string, "!=");
+            if (isDifferent != NULL) {
+                explodeCondition(conditionsArray, string, isDifferent, "!=");
+                continue;
+            }
+
+            char *isLessThanOrEqual = strstr(string, "<=");
+            if (isLessThanOrEqual != NULL) {
+                explodeCondition(conditionsArray, string, isLessThanOrEqual, "<=");
+                continue;
+            }
+
+            char *isGreaterThanOrEqual = strstr(string, ">=");
+            if (isGreaterThanOrEqual != NULL) {
+                explodeCondition(conditionsArray, string, isGreaterThanOrEqual, ">=");
+                continue;
+            }
+
+            char *isLessThan = strstr(string, "<");
+            if (isLessThan != NULL) {
+                explodeCondition(conditionsArray, string, isLessThan, "<");
+                continue;
+            }
+
+            char *isGreaterThan = strstr(string, ">");
+            if (isGreaterThan != NULL) {
+                explodeCondition(conditionsArray, string, isGreaterThan, ">");
+                continue;
+            }
+
+            char *isEqual = strstr(string, "=");
+            if (isEqual != NULL) {
+                explodeCondition(conditionsArray, string, isEqual, "=");
+                continue;
+            }
+
+            appendToStringArray(conditionsArray, string);
+        }
+
+        // WHERE clause is not resolvable
+        if (conditionsArray->size % 4 - 3 != 0) {
+            showErrorMessage();
+            freeStringArray(entryArray);
+            freeStringArray(conditionsArray);
+            return;
+        }
+        
+        // hydrate conditions
+        int nbConditions = conditionsArray->size / 4 + 1;
+        Condition conditions[nbConditions];
+        
+        for (int i = 0, j = 0; i < conditionsArray->size;) {
+            
+            conditions[j].column = conditionsArray->data[i];
+            conditions[j].type = conditionsArray->data[i+1];
+            conditions[j].value = conditionsArray->data[i+2];
+            
+            if (i + 3 != conditionsArray->size && i != 0) {
+                conditions[j].logicalOperator = conditionsArray->data[i+3];
+                i += 4;
+            } else {
+                i += 3;
+            }
+            
+            ++j;
+        }
+        
+        // DELETE FROM test WHERE id=23 AND age<=19 OR name=quentin;
+        Table table = {entryArray->data[2], 0, 0, NULL, NULL};
+        Database database = {currentDatabase};
+        
+        deleteRows(database, table, nbConditions, conditions);
+
+        // free
+        freeStringArray(conditionsArray);
     }
     
     // UPDATE
     
-    else if (strcmp(entryArray.data[0], "UPDATE") == 0) {
+    else if (strcmp(entryArray->data[0], "UPDATE") == 0) {
         // replaceQuotes(entryArray.data, entryArray.size);
         printf("launch the UPDATE function\n");
-        printf("Table name : %s\n", entryArray.data[1]); // parsedEntry[1] is the table
-        printf("Column name : %s\n", entryArray.data[3]); // parsedEntry[3] is the column where we change the value
-        printf("New value : %s\n", entryArray.data[5]); // parsedEntry[5] is the new value
-        printf("Column : %s\n", entryArray.data[7]); // parsedEntry[7] is the column
-        printf("Operator : %s\n", entryArray.data[8]); // parsedEntry[8] is the operator
-        printf("Value : %s\n", entryArray.data[9]); // parsedEntry[9] is the value
+        printf("Table name : %s\n", entryArray->data[1]); // parsedEntry[1] is the table
+        printf("Column name : %s\n", entryArray->data[3]); // parsedEntry[3] is the column where we change the value
+        printf("New value : %s\n", entryArray->data[5]); // parsedEntry[5] is the new value
+        printf("Column : %s\n", entryArray->data[7]); // parsedEntry[7] is the column
+        printf("Operator : %s\n", entryArray->data[8]); // parsedEntry[8] is the operator
+        printf("Value : %s\n", entryArray->data[9]); // parsedEntry[9] is the value
         
     }
     
-    else if (strcmp(entryArray.data[0], "CREATE") == 0) {
+    else if (strcmp(entryArray->data[0], "CREATE") == 0) {
         
         // CREATE DATABASE
         
-        if (strcmp(entryArray.data[1], "DATABASE") == 0) {
+        if (strcmp(entryArray->data[1], "DATABASE") == 0) {
             
-            if (strcmp(entryArray.data[2], "") == 0) {
+            if (entryArray->size < 3) {
                 showErrorMessage();
-                freeArray(entryArray);
+                freeStringArray(entryArray);
                 return;
             }
             
-            Database newDatabase = {entryArray.data[2]}; // parsedEntry[2] is the name of the database
+            Database newDatabase = {entryArray->data[2]};
             
             if (createDatabase(manager, newDatabase)) {
                 // if success, change the current database to the new one
@@ -183,24 +284,22 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
         // CREATE TABLE
         // ( Primary key, not null, auto increment not supported yet ) WIP
         
-        else if (strcmp(entryArray.data[1], "TABLE") == 0) {
+        else if (strcmp(entryArray->data[1], "TABLE") == 0) {
             
-            
-            if (strcmp(entryArray.data[2], "") == 0 || strcmp(entryArray.data[3], "") == 0) {
+            if (entryArray->size < 4) {
                 showErrorMessage();
-                freeArray(entryArray);
+                freeStringArray(entryArray);
                 return;
             }
             
             if (strcmp(currentDatabase, "") == 0) {
-                // no database selected, stop here
                 printf("Oops! No database selected.\n");
-                freeArray(entryArray);
+                freeStringArray(entryArray);
                 return;
             }
             
-            Column *newColumns = getColumns(entryArray.data[3], &nbColumns, 0);
-            Table newTable = {entryArray.data[2], nbColumns, 0, newColumns};
+            Column *newColumns = getColumns(entryArray->data[3], &nbColumns, 0);
+            Table newTable = {entryArray->data[2], nbColumns, 0, newColumns};
             
             Database database = {currentDatabase};
             
@@ -214,10 +313,16 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
         }
     }
     
-    else if(strcmp(entryArray.data[0], "DROP") == 0){
+    else if(strcmp(entryArray->data[0], "DROP") == 0) {
         
-        if (strcmp(entryArray.data[1], "DATABASE") == 0) {
-            Database oldDatabase = {entryArray.data[2]}; // parsedEntry[2] is the name of the database
+        if (entryArray->size < 3) {
+            showErrorMessage();
+            freeStringArray(entryArray);
+            return;
+        }
+        
+        if (strcmp(entryArray->data[1], "DATABASE") == 0) {
+            Database oldDatabase = {entryArray->data[2]};
             
             if (dropDatabase(manager, oldDatabase)) {
                 // if success && currentDatabase is dropped database
@@ -227,16 +332,15 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
                 }
             }
         }
-        else if (strcmp(entryArray.data[1], "TABLE") == 0) {
+        else if (strcmp(entryArray->data[1], "TABLE") == 0) {
             
             if (strcmp(currentDatabase, "") == 0) {
-                // no database selected, stop here
                 printf("Oops! No database selected.\n");
-                freeArray(entryArray);
+                freeStringArray(entryArray);
                 return;
             }
             
-            Table oldTable = {entryArray.data[2]};
+            Table oldTable = {entryArray->data[2]};
             Database database = {currentDatabase};
             
             dropTable(database, oldTable);
@@ -244,24 +348,24 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
         
     }
     
-    else if(strcmp(entryArray.data[0], "SHOW") == 0){
+    else if(strcmp(entryArray->data[0], "SHOW") == 0){
         
-        if (strcmp(entryArray.data[1], "DATABASES") == 0) {
+        if (strcmp(entryArray->data[1], "DATABASES") == 0) {
             printf("showDatabases();\n");
         }
-        else if (strcmp(entryArray.data[1], "TABLES") == 0) {
+        else if (strcmp(entryArray->data[1], "TABLES") == 0) {
             printf("showTables();\n");
         }
         
     }
     
-    else if (strcmp(entryArray.data[0], "USE") == 0) {
+    else if (strcmp(entryArray->data[0], "USE") == 0) {
         
-        Database database = {entryArray.data[1]};
+        Database database = {entryArray->data[1]};
         
         if (!isDatabase(database)) {
             printf("Oops! Database `%s` doesn't exist.\n", database.name);
-            freeArray(entryArray);
+            freeStringArray(entryArray);
             return;
         }
         
@@ -273,18 +377,7 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
         showErrorMessage();
     }
     
-    freeArray(entryArray);
-}
-
-//
-// Free memory for a given StringArray `array`
-//
-void freeArray(StringArray array)
-{
-    for (int i = 0; i < array.size; ++i) {
-        free(array.data[i]);
-    }
-    free(array.data);
+    freeStringArray(entryArray);
 }
 
 //
@@ -293,6 +386,21 @@ void freeArray(StringArray array)
 void showErrorMessage()
 {
     printf("Please enter a valid SQL command.\n");
-    printf("Check this website for more information : http://sql.sh/\n");
+    printf("Check this website for more informations: http://sql.sh/.\n");
 }
 
+void explodeCondition(StringArray *conditions, char *string, char *position, char *delimiter)
+{
+    int beginning = (int) (position - string + strlen(delimiter));
+    int length = (int) strlen(string) - beginning;
+    
+    char column[STRING_SIZE] = "";
+    strncpy(column, string, strlen(string) - length - strlen(delimiter));
+    appendToStringArray(conditions, column);
+    
+    appendToStringArray(conditions, delimiter);
+    
+    char value[STRING_SIZE] = "";
+    strncpy(value, string+beginning, length);
+    appendToStringArray(conditions, value);
+}

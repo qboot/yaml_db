@@ -13,16 +13,18 @@
 #include "../headers/manage_table.h"
 #include "../headers/manage_array.h"
 
+static void freeColumns(Column *columns, int *nbColumns);
+
 //
 // Parse a row string `- ["1","2","3","4"]` to an array of values
 // Return an array of string
 //
-StringArray parseRow(char *row)
+StringArray* parseRow(char *row)
 {
     // clean row before manipulate it
     trimLeadingSpaces(row);
     
-    StringArray rowToArray = {malloc(ARRAY_CAPACITY * sizeof(int)), 0, ARRAY_CAPACITY};
+    StringArray *rowToArray = createStringArray();
     
     int start = 0;
     int isReading = 0;
@@ -44,7 +46,7 @@ StringArray parseRow(char *row)
             isReading = 0;
             
             // insert in array
-            rowToArray = appendValueToStringArray(rowToArray, value);
+            appendToStringArray(rowToArray, value);
             strcpy(value, "\0");
             
             continue;
@@ -62,9 +64,24 @@ StringArray parseRow(char *row)
 //
 // Add row(s) to a given table
 //
-void addRows(const Database database, const Table table)
+int addRows(const Database database, const Table table)
 {
-    StringArray columnNames = getColumnNames(database, table);
+    if (!hasTable(database, table)) {
+        printf("Oops! Table `%s` doesn't exist.\n", table.name);
+        return 0;
+    }
+    
+    int *nbColumns = malloc(sizeof(int));
+    Column *columns = getAllColumns(database, table, nbColumns);
+    
+    if (*nbColumns != table.rows[0].nbCells && table.nbColumns == 0) {
+        
+        freeColumns(columns, nbColumns);
+        printf("Please provide a value for each column or use explicit mode.\n");
+        return 0;
+    }
+    
+    int isImplicit = (table.nbColumns == 0) ? 1 : 0;
     
     char newRows[table.nbRows][STRING_SIZE];
     int newRowsSize = 0;
@@ -76,16 +93,25 @@ void addRows(const Database database, const Table table)
         char row[STRING_SIZE] = "";
         strcat(row, "- [");
         
-        for (int j = 0; j < columnNames.size; ++j) {
+        for (int j = 0; j < *nbColumns; ++j) {
+            
+            if (isImplicit) {
+                // we should simply fill all values of the row
+                strcat(row, "\"");
+                strcat(row, table.rows[i].cells[j].data);
+                strcat(row, "\",");
+                continue;
+            }
+            
             int found = 0;
             
             for (int k = 0; k < table.nbColumns;  ++k) {
-                if (strcmp(columnNames.data[j], table.columns[k].name) != 0) {
+                if (strcmp(columns[j].name, table.columns[k].name) != 0) {
                     continue;
                 }
                 
                 strcat(row, "\"");
-                strcat(row, table.rows[i].cells[j].data);
+                strcat(row, table.rows[i].cells[k].data);
                 strcat(row, "\",");
                 found = 1;
                 break;
@@ -110,6 +136,7 @@ void addRows(const Database database, const Table table)
     FILE *file = fopen(tablePath, "a");
     
     if (file == NULL) {
+        freeColumns(columns, nbColumns);
         free(tablePath);
         printf("fopen() failed in file %s at line #%d\n", __FILE__, __LINE__);
         exit(EXIT_FAILURE);
@@ -121,12 +148,11 @@ void addRows(const Database database, const Table table)
     
     fclose(file);
     
-    // free memory
-    for (int i = 0; i < columnNames.size; ++i) {
-        free(columnNames.data[i]);
-    }
-    free(columnNames.data);
+    freeColumns(columns, nbColumns);
     free(tablePath);
+    
+    printf("New row added to `%s`.\n", table.name);
+    return 1;
 }
 
 //
@@ -141,13 +167,15 @@ void updateRows(
                 const Condition *conditions
                 )
 {
-    // get all column names
-    StringArray columnNames = getColumnNames(database, table);
+
+    int *nbColumns = malloc(sizeof(int));
+    Column *columns = getAllColumns(database, table, nbColumns);
     
     char *tablePath = createFileInDirPath(table.name, database.name);
     FILE *file = fopen(tablePath, "r");
     
     if (file == NULL) {
+        freeColumns(columns, nbColumns);
         free(tablePath);
         printf("fopen() failed in file %s at line #%d\n", __FILE__, __LINE__);
         exit(EXIT_FAILURE);
@@ -177,17 +205,17 @@ void updateRows(
         }
         
         // create a `row` array which is an array of current line values
-        StringArray row = parseRow(line);
+        StringArray *row = parseRow(line);
         int needUpdate = 0;
         
         // check if row is concerned by `where` claused
         // foreach column in table -> foreach condition
         // if condition concerned column x, if row value matches for column x, row needs update
-        for (int i = 0; i < columnNames.size; ++i) {
+        for (int i = 0; i < *nbColumns; ++i) {
             for (int j = 0; j < nbConditions; ++j) {
                 if (strcmp(conditions[j].type, "=") == 0) {
-                    if (strcmp(conditions[j].column, columnNames.data[i]) == 0) {
-                        if (strcmp(conditions[j].value, row.data[i]) == 0) {
+                    if (strcmp(conditions[j].column, columns[i].name) == 0) {
+                        if (strcmp(conditions[j].value, row->data[i]) == 0) {
                             needUpdate = 1;
                         } else {
                             needUpdate = 0;
@@ -205,18 +233,18 @@ void updateRows(
             // create the new line
             char newLine[STRING_SIZE] = TAB TAB "- [";
             
-            for (int i = 0; i < columnNames.size; ++i) {
+            for (int i = 0; i < *nbColumns; ++i) {
                 int find = 0;
                 strcat(newLine, "\"");
                 for (int j = 0; j < table.nbColumns; ++j) {
-                    if (strcmp(columnNames.data[i], table.columns[j].name) == 0) {
+                    if (strcmp(columns[i].name, table.columns[j].name) == 0) {
                         find = 1;
                         strcat(newLine, values[j]);
                     }
                 }
                 
                 if (!find) {
-                    strcat(newLine, row.data[i]);
+                    strcat(newLine, row->data[i]);
                 }
                 
                 strcat(newLine, "\",");
@@ -229,42 +257,38 @@ void updateRows(
             replaceLine(tablePath, pos, newLine);
         }
         
-        for (int i = 0; i < row.size; ++i) {
-            free(row.data[i]);
-        }
-        free(row.data);
+        freeStringArray(row);
         
         ++pos;
     }
     
     fclose(file);
     
-    for (int i = 0; i < columnNames.size; ++i) {
-        free(columnNames.data[i]);
-    }
-    free(columnNames.data);
+    freeColumns(columns, nbColumns);
     free(tablePath);
 }
 
 //
 // Delete row(s) of a given table depending of some conditions (`where` SQL clause)
 //
-void deleteRows(const Database database, const Table table, const int nbConditions, const Condition *conditions)
+int deleteRows(const Database database, const Table table, const int nbConditions, const Condition *conditions)
 {
-    // get all column names
-    StringArray columnNames = getColumnNames(database, table);
+    if (!hasTable(database, table)) {
+        printf("Oops! Table `%s` doesn't exist.\n", table.name);
+        return 0;
+    }
+    
+    int *nbColumns = malloc(sizeof(int));
+    Column *columns = getAllColumns(database, table, nbColumns);
     
     // prepare an array `rowsToDelete` to save all line positions of rows that should be deleted
-    IntArray rowsToDelete = {
-        malloc(ARRAY_CAPACITY * sizeof(int)),
-        0,
-        ARRAY_CAPACITY
-    };
+    IntArray *rowsToDelete = createIntArray();
     
     char *tablePath = createFileInDirPath(table.name, database.name);
     FILE *file = fopen(tablePath, "r");
     
     if (file == NULL) {
+        freeColumns(columns, nbColumns);
         free(tablePath);
         printf("fopen() failed in file %s at line #%d\n", __FILE__, __LINE__);
         exit(EXIT_FAILURE);
@@ -294,39 +318,40 @@ void deleteRows(const Database database, const Table table, const int nbConditio
         }
         
         // create a `row` array which is an array of current line values
-        StringArray row = parseRow(line);
+        StringArray *row = parseRow(line);
         int shouldBeDeleted = 0;
         
         // check if row is concerned by `where` claused
         // foreach column in table -> foreach condition
         // if condition concerned column x, if row value matches for column x, row should be deleted
-        for (int i = 0; i < columnNames.size; ++i) {
+        for (int i = 0; i < *nbColumns; ++i) {
             for (int j = 0; j < nbConditions; ++j) {
                 if (strcmp(conditions[j].type, "=") == 0) {
-                    if (strcmp(conditions[j].column, columnNames.data[i]) == 0) {
-                        if (strcmp(conditions[j].value, row.data[i]) == 0) {
+                    if (strcmp(conditions[j].column, columns[i].name) == 0) {
+                        if (strcmp(conditions[j].value, row->data[i]) == 0) {
                             shouldBeDeleted = 1;
                         } else {
                             shouldBeDeleted = 0;
                         }
                     }
-                } else if (strcmp(conditions[i].type, ">") == 0) {
-                    // TODO
-                } else if (strcmp(conditions[i].type, "<") == 0) {
-                    // TODO
+                } else if (strcmp(conditions[i].type, "!=") == 0) {
+                    if (strcmp(conditions[j].column, columns[i].name) == 0) {
+                        if (strcmp(conditions[j].value, row->data[i]) != 0) {
+                            shouldBeDeleted = 1;
+                        } else {
+                            shouldBeDeleted = 0;
+                        }
+                    }
                 }
             }
         }
         
         if (shouldBeDeleted) {
             // save pos of line that should be deleted to `rowToDelete` array
-            rowsToDelete = appendValueToIntArray(rowsToDelete, pos);
+            appendToIntArray(rowsToDelete, pos);
         }
         
-        for (int i = 0; i < row.size; ++i) {
-            free(row.data[i]);
-        }
-        free(row.data);
+        freeStringArray(row);
         
         ++pos;
     }
@@ -334,15 +359,28 @@ void deleteRows(const Database database, const Table table, const int nbConditio
     fclose(file);
     
     // remove all matching rows
-    for (int i = 0; i < rowsToDelete.size; ++i) {
-        removeLine(tablePath, rowsToDelete.data[i]-i);
+    for (int i = 0; i < rowsToDelete->size; ++i) {
+        removeLine(tablePath, rowsToDelete->data[i]-i);
     }
     
     // free memory
-    for (int i = 0; i < columnNames.size; ++i) {
-        free(columnNames.data[i]);
-    }
-    free(columnNames.data);
-    free(rowsToDelete.data);
+    freeColumns(columns, nbColumns);
+    freeIntArray(rowsToDelete);
     free(tablePath);
+    
+    printf("Row(s) deleted from `%s`.\n", table.name);
+    return 1;
+}
+
+//
+// Free an existing `columns` pointer with its related `nbColumns` pointer
+//
+void freeColumns(Column *columns, int *nbColumns)
+{
+    for (int i = 0; i < *nbColumns; ++i) {
+        free(columns[i].name);
+        free(columns[i].type);
+    }
+    free(columns);
+    free(nbColumns);
 }

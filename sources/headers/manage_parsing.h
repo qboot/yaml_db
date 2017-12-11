@@ -13,7 +13,7 @@
 
 Column* getColumns(char *string, int *nbColumns, int onlyName);
 Row getRow(char *string);
-StringArray splitWithDelimiter(char *string, char delimiter);
+StringArray* splitWithDelimiter(char *string, char delimiter);
 char* secureInput(char *string);
 
 #endif

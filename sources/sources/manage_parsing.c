@@ -18,34 +18,28 @@
 //
 Column* getColumns(char *string, int *nbColumns, int onlyName)
 {
-    StringArray columnsArray = splitWithDelimiter(string, ',');
-    Column *columns = malloc(sizeof(Column)*columnsArray.size);
-    *nbColumns = columnsArray.size;
+    StringArray *columnsArray = splitWithDelimiter(string, ',');
+    Column *columns = malloc(sizeof(Column)*columnsArray->size);
+    *nbColumns = columnsArray->size;
     
     for (int i = 0; i < *nbColumns; ++i) {
         columns[i].name = malloc(sizeof(char)*STRING_SIZE);
         columns[i].type = malloc(sizeof(char)*STRING_SIZE);
     }
     
-    for (int i = 0; i < columnsArray.size; ++i) {
-        StringArray columnPart = splitWithDelimiter(columnsArray.data[i], ' ');
+    for (int i = 0; i < columnsArray->size; ++i) {
+        StringArray *columnPart = splitWithDelimiter(columnsArray->data[i], ' ');
         
-        strcpy(columns[i].name, columnPart.data[0]);
+        strcpy(columns[i].name, columnPart->data[0]);
         
         if (!onlyName) {
-            strcpy(columns[i].type, columnPart.data[1]);
+            strcpy(columns[i].type, columnPart->data[1]);
         }
         
-        for (int j = 0; j < columnPart.size; ++j) {
-            free(columnPart.data[j]);
-        }
-        free(columnPart.data);
+        freeStringArray(columnPart);
     }
     
-    for (int i = 0; i < columnsArray.size; ++i) {
-        free(columnsArray.data[i]);
-    }
-    free(columnsArray.data);
+    freeStringArray(columnsArray);
     
     return columns;
 }
@@ -55,22 +49,19 @@ Column* getColumns(char *string, int *nbColumns, int onlyName)
 //
 Row getRow(char *string)
 {
-    StringArray cellsArray = splitWithDelimiter(string, ',');
-    Cell *cells = malloc(sizeof(int)*cellsArray.size);
-    for (int i = 0; i < cellsArray.size; ++i) {
+    StringArray *cellsArray = splitWithDelimiter(string, ',');
+    Cell *cells = malloc(sizeof(int)*cellsArray->size);
+    for (int i = 0; i < cellsArray->size; ++i) {
         cells[i].data = malloc(sizeof(char)*STRING_SIZE);
     }
     
-    for (int i = 0; i < cellsArray.size; ++i) {
-        strcpy(cells[i].data, secureInput(cellsArray.data[i]));
+    for (int i = 0; i < cellsArray->size; ++i) {
+        strcpy(cells[i].data, secureInput(cellsArray->data[i]));
     }
     
-    Row row = {cellsArray.size, cells};
+    Row row = {cellsArray->size, cells};
     
-    for (int i = 0; i < cellsArray.size; ++i) {
-        free(cellsArray.data[i]);
-    }
-    free(cellsArray.data);
+    freeStringArray(cellsArray);
     
     return row;
 }
@@ -79,9 +70,9 @@ Row getRow(char *string)
 // Split a string with a given delimiter which can be escaped with `\`
 // Example : String "foo, bar \" baz, qux" => Array "foo" "bar \" baz" and "qux"
 //
-StringArray splitWithDelimiter(char *string, char delimiter)
+StringArray* splitWithDelimiter(char *string, char delimiter)
 {
-    StringArray stringArray = {malloc(ARRAY_CAPACITY * sizeof(int)), 0, ARRAY_CAPACITY};
+    StringArray *stringArray = createStringArray();
     char value[STRING_SIZE] = "";
     
     for (int i = 0; i < strlen(string); ++i) {
@@ -106,7 +97,7 @@ StringArray splitWithDelimiter(char *string, char delimiter)
             trimTrailingSpaces(value);
             
             if (strcmp(value, "") != 0) {
-                stringArray = appendValueToStringArray(stringArray, value);
+                appendToStringArray(stringArray, value);
                 strcpy(value, "\0");
             }
             
