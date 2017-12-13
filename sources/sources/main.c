@@ -30,6 +30,8 @@ int main(int argc, const char* argv[])
     MainWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     g_signal_connect(G_OBJECT(MainWindow), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
     
+    gtk_window_set_default_size(MainWindow, 1200, 700);
+    
     /* Affichage et boucle évènementielle */
     gtk_widget_show(MainWindow);
     gtk_main();
