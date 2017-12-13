@@ -1,0 +1,12 @@
+# OS X
+.DS_Store
+profile
+
+# Xcode
+xcuserdata
+
+# Generated databases
+/databases
+
+# Keep directories
+!.gitkeep

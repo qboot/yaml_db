@@ -1,0 +1,6 @@
+# this file is a representation of all existing databases
+# it MUST begin with "databases"
+
+databases:
+    - reference
+    - demo
