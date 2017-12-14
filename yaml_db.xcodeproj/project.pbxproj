@@ -1,0 +1,360 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		666D93CD1FE2217800DFC25D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 666D93CC1FE2217800DFC25D /* main.c */; };
+		666D93DD1FE2244500DFC25D /* libglib-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 666D93D41FE2244500DFC25D /* libglib-2.0.0.dylib */; };
+		666D93DE1FE2244500DFC25D /* libpango-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 666D93D51FE2244500DFC25D /* libpango-1.0.0.dylib */; };
+		666D93DF1FE2244500DFC25D /* libgtk-3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 666D93D61FE2244500DFC25D /* libgtk-3.0.dylib */; };
+		666D93E01FE2244500DFC25D /* libgdk-3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 666D93D71FE2244500DFC25D /* libgdk-3.0.dylib */; };
+		666D93E11FE2244500DFC25D /* libgthread-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 666D93D81FE2244500DFC25D /* libgthread-2.0.0.dylib */; };
+		666D93E21FE2244500DFC25D /* libgdk_pixbuf-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 666D93D91FE2244500DFC25D /* libgdk_pixbuf-2.0.0.dylib */; };
+		666D93E31FE2244500DFC25D /* libgmodule-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 666D93DA1FE2244500DFC25D /* libgmodule-2.0.0.dylib */; };
+		666D93E41FE2244500DFC25D /* libatk-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 666D93DB1FE2244500DFC25D /* libatk-1.0.0.dylib */; };
+		666D93E51FE2244500DFC25D /* libgobject-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 666D93DC1FE2244500DFC25D /* libgobject-2.0.0.dylib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		666D93C71FE2217800DFC25D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		666D93C91FE2217800DFC25D /* yaml_db */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = yaml_db; sourceTree = BUILT_PRODUCTS_DIR; };
+		666D93CC1FE2217800DFC25D /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		666D93D41FE2244500DFC25D /* libglib-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libglib-2.0.0.dylib"; path = "../../../../../../../../../../usr/local/Cellar/glib/2.54.2/lib/libglib-2.0.0.dylib"; sourceTree = "<group>"; };
+		666D93D51FE2244500DFC25D /* libpango-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libpango-1.0.0.dylib"; path = "../../../../../../../../../../usr/local/Cellar/pango/1.40.14/lib/libpango-1.0.0.dylib"; sourceTree = "<group>"; };
+		666D93D61FE2244500DFC25D /* libgtk-3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgtk-3.0.dylib"; path = "../../../../../../../../../../usr/local/Cellar/gtk+3/3.22.26/lib/libgtk-3.0.dylib"; sourceTree = "<group>"; };
+		666D93D71FE2244500DFC25D /* libgdk-3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgdk-3.0.dylib"; path = "../../../../../../../../../../usr/local/Cellar/gtk+3/3.22.26/lib/libgdk-3.0.dylib"; sourceTree = "<group>"; };
+		666D93D81FE2244500DFC25D /* libgthread-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgthread-2.0.0.dylib"; path = "../../../../../../../../../../usr/local/Cellar/glib/2.54.2/lib/libgthread-2.0.0.dylib"; sourceTree = "<group>"; };
+		666D93D91FE2244500DFC25D /* libgdk_pixbuf-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgdk_pixbuf-2.0.0.dylib"; path = "../../../../../../../../../../usr/local/Cellar/gdk-pixbuf/2.36.11/lib/libgdk_pixbuf-2.0.0.dylib"; sourceTree = "<group>"; };
+		666D93DA1FE2244500DFC25D /* libgmodule-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgmodule-2.0.0.dylib"; path = "../../../../../../../../../../usr/local/Cellar/glib/2.54.2/lib/libgmodule-2.0.0.dylib"; sourceTree = "<group>"; };
+		666D93DB1FE2244500DFC25D /* libatk-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libatk-1.0.0.dylib"; path = "../../../../../../../../../../usr/local/Cellar/atk/2.26.1/lib/libatk-1.0.0.dylib"; sourceTree = "<group>"; };
+		666D93DC1FE2244500DFC25D /* libgobject-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgobject-2.0.0.dylib"; path = "../../../../../../../../../../usr/local/Cellar/glib/2.54.2/lib/libgobject-2.0.0.dylib"; sourceTree = "<group>"; };
+		669214761FE5411900E29A82 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		669214771FE542A700E29A82 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		666D93C61FE2217800DFC25D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				666D93DF1FE2244500DFC25D /* libgtk-3.0.dylib in Frameworks */,
+				666D93E11FE2244500DFC25D /* libgthread-2.0.0.dylib in Frameworks */,
+				666D93E31FE2244500DFC25D /* libgmodule-2.0.0.dylib in Frameworks */,
+				666D93E21FE2244500DFC25D /* libgdk_pixbuf-2.0.0.dylib in Frameworks */,
+				666D93E01FE2244500DFC25D /* libgdk-3.0.dylib in Frameworks */,
+				666D93E41FE2244500DFC25D /* libatk-1.0.0.dylib in Frameworks */,
+				666D93DE1FE2244500DFC25D /* libpango-1.0.0.dylib in Frameworks */,
+				666D93DD1FE2244500DFC25D /* libglib-2.0.0.dylib in Frameworks */,
+				666D93E51FE2244500DFC25D /* libgobject-2.0.0.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		666D93C01FE2217800DFC25D = {
+			isa = PBXGroup;
+			children = (
+				669214761FE5411900E29A82 /* README.md */,
+				669214771FE542A700E29A82 /* .gitignore */,
+				666D93D31FE2238400DFC25D /* libs */,
+				666D93CB1FE2217800DFC25D /* sources */,
+				666D93CA1FE2217800DFC25D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		666D93CA1FE2217800DFC25D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				666D93C91FE2217800DFC25D /* yaml_db */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		666D93CB1FE2217800DFC25D /* sources */ = {
+			isa = PBXGroup;
+			children = (
+				666D93CC1FE2217800DFC25D /* main.c */,
+			);
+			path = sources;
+			sourceTree = "<group>";
+		};
+		666D93D31FE2238400DFC25D /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				666D93DB1FE2244500DFC25D /* libatk-1.0.0.dylib */,
+				666D93D71FE2244500DFC25D /* libgdk-3.0.dylib */,
+				666D93D91FE2244500DFC25D /* libgdk_pixbuf-2.0.0.dylib */,
+				666D93D41FE2244500DFC25D /* libglib-2.0.0.dylib */,
+				666D93DA1FE2244500DFC25D /* libgmodule-2.0.0.dylib */,
+				666D93DC1FE2244500DFC25D /* libgobject-2.0.0.dylib */,
+				666D93D81FE2244500DFC25D /* libgthread-2.0.0.dylib */,
+				666D93D61FE2244500DFC25D /* libgtk-3.0.dylib */,
+				666D93D51FE2244500DFC25D /* libpango-1.0.0.dylib */,
+			);
+			path = libs;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		666D93C81FE2217800DFC25D /* yaml_db */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 666D93D01FE2217800DFC25D /* Build configuration list for PBXNativeTarget "yaml_db" */;
+			buildPhases = (
+				666D93C51FE2217800DFC25D /* Sources */,
+				666D93C61FE2217800DFC25D /* Frameworks */,
+				666D93C71FE2217800DFC25D /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = yaml_db;
+			productName = yaml_db;
+			productReference = 666D93C91FE2217800DFC25D /* yaml_db */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		666D93C11FE2217800DFC25D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0920;
+				ORGANIZATIONNAME = "Quentin Brunet";
+				TargetAttributes = {
+					666D93C81FE2217800DFC25D = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 666D93C41FE2217800DFC25D /* Build configuration list for PBXProject "yaml_db" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 666D93C01FE2217800DFC25D;
+			productRefGroup = 666D93CA1FE2217800DFC25D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				666D93C81FE2217800DFC25D /* yaml_db */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		666D93C51FE2217800DFC25D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				666D93CD1FE2217800DFC25D /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		666D93CE1FE2217800DFC25D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		666D93CF1FE2217800DFC25D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		666D93D11FE2217800DFC25D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = (
+					"/usr/local/opt/gtk+3/include/**",
+					"/usr/local/opt/glib/include/**",
+					"/usr/local/opt/cairo/include/**",
+					"/usr/local/opt/pango/include/**",
+					"/usr/local/opt/gdk-pixbuf/include/**",
+					"/usr/local/opt/atk/include/**",
+					"/usr/local/opt/gtk+3/lib/**",
+					"/usr/local/opt/glib/lib/**",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"/usr/local/opt/gtk+3/lib/**",
+					"/usr/local/opt/glib/lib/**",
+					/usr/local/Cellar/glib/2.54.2/lib,
+					/usr/local/Cellar/pango/1.40.14/lib,
+					"/usr/local/Cellar/gtk+3/3.22.26/lib",
+					"/usr/local/Cellar/gdk-pixbuf/2.36.11/lib",
+					/usr/local/Cellar/atk/2.26.1/lib,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		666D93D21FE2217800DFC25D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = (
+					"/usr/local/opt/gtk+3/include/**",
+					"/usr/local/opt/glib/include/**",
+					"/usr/local/opt/cairo/include/**",
+					"/usr/local/opt/pango/include/**",
+					"/usr/local/opt/gdk-pixbuf/include/**",
+					"/usr/local/opt/atk/include/**",
+					"/usr/local/opt/gtk+3/lib/**",
+					"/usr/local/opt/glib/lib/**",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"/usr/local/opt/gtk+3/lib/**",
+					"/usr/local/opt/glib/lib/**",
+					/usr/local/Cellar/glib/2.54.2/lib,
+					/usr/local/Cellar/pango/1.40.14/lib,
+					"/usr/local/Cellar/gtk+3/3.22.26/lib",
+					"/usr/local/Cellar/gdk-pixbuf/2.36.11/lib",
+					/usr/local/Cellar/atk/2.26.1/lib,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		666D93C41FE2217800DFC25D /* Build configuration list for PBXProject "yaml_db" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				666D93CE1FE2217800DFC25D /* Debug */,
+				666D93CF1FE2217800DFC25D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		666D93D01FE2217800DFC25D /* Build configuration list for PBXNativeTarget "yaml_db" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				666D93D11FE2217800DFC25D /* Debug */,
+				666D93D21FE2217800DFC25D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 666D93C11FE2217800DFC25D /* Project object */;
+}
