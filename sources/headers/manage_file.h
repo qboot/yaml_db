@@ -18,6 +18,7 @@ char* createFileInDir(const char *filename, const char *dirname);
 void removeFile(const char *filename);
 void removeFileInDir(const char *filename, const char *dirname);
 int isFile(const char *filename);
+void createRootDir();
 void createDir(const char *dirname);
 void removeDir(const char *dirname);
 int isValidName(const char *name);
