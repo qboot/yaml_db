@@ -57,8 +57,6 @@
 		66A181901FDD70DB002C675F /* manage_parsing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = manage_parsing.h; sourceTree = "<group>"; };
 		66A181911FDD70E4002C675F /* manage_parsing.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = manage_parsing.c; sourceTree = "<group>"; };
 		66A181921FDD70E4002C675F /* manage_entry.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = manage_entry.c; sourceTree = "<group>"; };
-		E80F362B1FDD858F0030660A /* manage_array.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = manage_array.h; sourceTree = "<group>"; };
-		E80F362C1FDD858F0030660A /* manage_array.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = manage_array.c; sourceTree = "<group>"; };
 		E80F362E1FDD89A10030660A /* read_file.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = read_file.h; sourceTree = "<group>"; };
 		E80F362F1FDD89A10030660A /* read_file.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = read_file.c; sourceTree = "<group>"; };
 		E83BFB7F1FC9E6B400A5B18D /* read_table.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = read_table.h; sourceTree = "<group>"; };

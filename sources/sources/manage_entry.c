@@ -18,6 +18,7 @@
 #include "../headers/read_table.h"
 
 static void showErrorMessage(void);
+static void showUserHelp(void);
 static void explodeCondition(StringArray *conditions, char *string, char *position, char *delimiter);
 
 //
@@ -70,6 +71,11 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
         
         char charToString[] = {entry[i], '\0'};
         strcat(entryPart, charToString);
+    }
+    
+    if (strcmp(entryArray->data[0], "HELP") == 0) {
+        showUserHelp();
+        return;
     }
     
     if (entryArray->size < 2) {
@@ -422,3 +428,35 @@ void explodeCondition(StringArray *conditions, char *string, char *position, cha
     appendToStringArray(conditions, value);
 }
 
+void showUserHelp()
+{
+    printf("\nWelcome to the user manual!\n");
+    printf("\n");
+    printf("----------------------------\n");
+    printf("   -                    -   \n");
+    printf("  -     USER MANUAL      -  \n");
+    printf("   -                    -   \n");
+    printf("----------------------------\n");
+    printf("\nWrite your query after : \"yaml_db >\"\n");
+    printf("\nKeywords from SQL must be written in capital\n");
+    printf("Query must end with \";\"\n");
+    printf("\nUsers can write values with quotes, only if the values is a string\n");
+    printf("Users cans use simple or double quote.\n");
+    printf("\n\"INSERT INTO\" query works with explicit and implicit column name.\n");
+    printf("With explicit name, users just have to specify some colmun name\n");
+    printf("With implicit users must set value to every column\n");
+    printf("\nTo read datas, users can select all columns, a specific column.\n");
+    printf("Users can use where condition.\n");
+    printf("Where coniditon works with \"LIKE\" or with \"=\".\n");
+    printf("\nHere is some query exemples users can use :\n\n");
+    printf("SHOW DATABASES;\n");
+    printf("USE db_name;\n");
+    printf("CREATE TABLE table_name (col1 type, col2 type, ...);\n");
+    printf("INSERT INTO table_name (col1, col2) VALUES (val1, val2);\n");
+    printf("INSERT INTO table_name (val1, val2);\n");
+    printf("UPDATE table_name SET col1 = val1, col2 = val2 WHERE id = 1 OR name = quentin;\n");
+    printf("DELETE FROM table_name WHERE id = 1 AND name != quentin OR age = 22;\n");
+    printf("DROP TABLE table_name;\nDROP DATABASE db_name;\n");
+    printf("EXIT; QUIT;\n");
+    return;
+}
