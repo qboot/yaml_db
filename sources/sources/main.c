@@ -21,6 +21,7 @@ static void entryLoop(void);
 static int isExitCommand(char *command);
 
 int main(int argc, const char *argv[])
+<<<<<<< HEAD
 {
     printf("Welcome to yaml_db project! \n");
     printf("\n");
@@ -86,6 +87,56 @@ int isExitCommand(char *command)
     if (strcmp(cleanCommand, "exit") == 0 || strcmp(cleanCommand, "quit") == 0) {
         return 1;
     }
+}
+
+void test-readtable() {    
+    char *manager = DB_FILENAME;
+    char *managerPath = createFilePath(manager);
+    
+    char *requete = "select";
+    char *table = "person";
+    StringArray where = {
+        malloc(ARRAY_CAPACITY * sizeof(int)),
+        0,
+        ARRAY_CAPACITY
+    };
+    where = appendValueToStringArray(where, "username");
+    where = appendValueToStringArray(where, "gender");
+    StringArray value = {
+        malloc(ARRAY_CAPACITY * sizeof(int)),
+        0,
+        ARRAY_CAPACITY
+    };
+    value = appendValueToStringArray(value, "%osie McQui%");
+    value = appendValueToStringArray(value, "%F%");
+    char *condition = "LIKE";
+    char *column = "";
+
+    
+     Table currentTable = findAllRecords(managerPath, table);
+    if (where.size > 0 && strcmp(condition, "=") == 0)
+    {
+        for (int i = 0; i < where.size; i ++)
+        {
+            int columnPlace = searchColumnPlace(&currentTable, where.data[i]);
+            currentTable = searchSpecificData(&currentTable, columnPlace, value.data[i]);
+        }
+    }
+    else if (where.size > 0 && (strcmp(condition, "like") == 0 || strcmp(condition, "LIKE") == 0))
+    {
+        for (int i = 0; i < where.size; i ++)
+        {
+            int columnPlace = searchColumnPlace(&currentTable, where.data[i]);
+            currentTable = searchData(&currentTable, columnPlace, value.data[i]);
+        }
+    }
+    if (column != NULL && strcmp(column, "") != 0)
+    {
+        searchSpecifiColumn(&currentTable, column);
+    }
+        printAllResult(&currentTable);
+    
+    //showDatabases(managerPath);
     
     return 0;
 }

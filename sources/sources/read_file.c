@@ -21,19 +21,38 @@
 #include "../headers/read_file.h"
 
 /**
+ // read the name of all databases
+**/
+void showDatabases(char* managerPath)
+{
+    FILE* file = fopen(managerPath, "r");
+    if (file != NULL)
+    {
+        char databaseName[STRING_SIZE];
+        while (fgets(databaseName, STRING_SIZE, file) != NULL) {
+            if (strstr(databaseName, "    ") != NULL) {
+                printf("%s", databaseName + 6);
+            }
+        }
+    }
+
+}
+
+/**
  // Read the data for a given database name 'db_name'
  // and a 'name'
+ // Return a Table
  **/
-void findAllRecords(char* db_name, char* table_name)
+Table findAllRecords(char* db_name, char* table_name)
 {
     char *table_file = createFilePath(table_name);
-    
-    if(!filesFound(db_name, table_name, table_file)) {
-        return;
-    }
-    
+
     Table currentTable;
     
+    if(!filesFound(db_name, table_name, table_file)) {
+        return currentTable;
+    }
+
     FILE* f = fopen(table_file, "r");
     
     StringArray columnsName = readColumnsName(f);
@@ -48,107 +67,12 @@ void findAllRecords(char* db_name, char* table_name)
     
     StringArray data = readData(f);
     parseData(data, &currentTable);
-    
-    printResult(&currentTable);
-    // func free table to clen memory
-    
-    
-    return;
+
+    return currentTable;
 }
 
-/**
- // Read the data for a given database name 'db_name',
- // a given 'tbale_name',
- // a condition (where / like),
- // and print result where is a given 'record_value'
- **/
-void findSpecificRecords(char* db_name, char* table_name, char* column_name, char* record_value, char* conditionType)
-{
- /*   char *table_file = createFilePath(table_name);
-    
-    if (!filesFound(db_name, table_name, table_file)) {
-        return;
-    }
-    
-    FILE* f = fopen(table_file, "r");
-    
-    char temp[STRING_SIZE];
-    int columnNameSize = 0;
-    
-    char **columnName = readColumnName(f);
-    
-    while ((fgets(temp, STRING_SIZE, f) != NULL) && (strstr(temp, "-") != NULL)) {
-        if ((strstr(temp, "        ")) != NULL && (strstr(temp, "            ")) == NULL && (strstr(temp, record_value)) != NULL) {
-            char temp2[STRING_SIZE];
-            strcpy(temp2, temp + 11);
-            char *token;
-            token = strtok(temp2, ", ");
-            while (token != NULL) {
-                printf("%s |", token);
-                token = strtok(NULL, ",");
-            }
-        }
-    }
-    
-    for (int i = 0; i < columnNameSize; i++) {
-        free(columnName[i]);
-    }
-    free(columnName);
-    */
-}
 
-void findColumnsName(char* db_name, char* table_name)
-{
-    char *table_file = createFilePath(table_name);
-    
-    if(!filesFound(db_name, table_name, table_file)) {
-        return;
-    }
-    
-    Table currentTable;
-    
-    FILE* f = fopen(table_file, "r");
-    
-    StringArray columnsName = readColumnsName(f);
-    
-    currentTable.columns = malloc(sizeof(Column) * columnsName.size);
-    currentTable.nbColumns = columnsName.size;
-    
-    for (int i = 0; i < currentTable.nbColumns; i++) {
-        currentTable.columns[i].name = columnsName.data[i];
-    }
-    
-    currentTable.nbRows = 0;
-    
-    printResult(&currentTable);
-    
-    return;
-}
 
-/**
- // Read the data in a given FILE* 'f'
- // and return an array of string with the column name
- **/
-char** readColumnNameOld(FILE* f, int *columnNameSize)
-{
-    
-    char **columnName = malloc(10 * sizeof(char *));
-    
-    char temp[STRING_SIZE];
-    
-    int i = 0;
-    while ((fgets(temp, STRING_SIZE, f) != NULL) && (strstr(temp, "data") == NULL)) {
-        if ((strstr(temp, "        ")) != NULL && (strstr(temp, "            ")) == NULL) {
-            temp[strlen(temp)-2] = '\0';
-            columnName[i] = malloc(STRING_SIZE * sizeof(char));
-            strcpy(columnName[i], temp + 8);
-            i++;
-            *columnNameSize += 1;
-        }
-    }
-    
-    return columnName;
-}
 
 /**
  // Read the data in a given FILE* 'f'
@@ -213,6 +137,7 @@ StringArray readData(FILE* f)
  **/
 int filesFound(char *db_name, char *table_name, char *table_file)
 {
+    
     if (!isFile(db_name)) {
         printf("the database doesn't exist\n");
         return 0;

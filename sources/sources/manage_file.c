@@ -154,6 +154,8 @@ void removeFileInDir(const char *filename, const char *dirname)
 //
 int isFile(const char *filename)
 {
+    printf("%s", filename);
+    
     FILE *file = fopen(filename, "r");
     
     if (file != NULL) {

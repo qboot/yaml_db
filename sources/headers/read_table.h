@@ -13,10 +13,11 @@
 #include "config.h"
 
 void parseData(StringArray data, Table *currentTable);
-void printResult(Table *currentTable);
+void printAllResult(Table *currentTable);
 int searchColumnPlace(Table *currentTable, char *columnName);
-IntArray searchSpecificData(Table *currentTable, int columnPlace, char *dataSearched);
-IntArray searchData(Table *currentTable, int columnPlace, char *dataSearched);
-
+Table searchSpecificData(Table *currentTable, int columnPlace, char *dataSearched);
+Table searchData(Table *currentTable, int columnPlace, char *dataSearched);
+void searchSpecifiColumn(Table *currentTable, char *columnName);
+void clearUnusedColumn(Table *currentTable, int columnPlace);
 #endif
 
