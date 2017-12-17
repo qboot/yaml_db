@@ -132,7 +132,7 @@ void testReadtable() {
     }
     // in case of condition where =
     // for each condition filter datas
-    else if (where.size > 0 && (strcmp(condition, "like") == 0 || strcmp(condition, "LIKE") == 0))
+    else if (where.size > 0 && strcmp(condition, "LIKE") == 0))
     {
         for (int i = 0; i < where.size; i ++)
         {

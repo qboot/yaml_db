@@ -6,10 +6,9 @@
 //  Copyright © 2017 Groupe 16. All rights reserved.
 //
 
-#ifndef read_file_h
-#define read_file_h
+#ifndef READ_FILE
+#define READ_FILE
 
-#include <stdio.h>
 #include "config.h"
 
 void showDatabases(char* managerPath);

@@ -30,7 +30,7 @@ void showDatabases(char* managerPath)
     {
         char databaseName[STRING_SIZE];
         while (fgets(databaseName, STRING_SIZE, file) != NULL) {
-            if (strstr(databaseName, "    ") != NULL) {
+            if (strstr(databaseName, TAB) != NULL) {
                 printf("%s", databaseName + 6);
             }
         }
@@ -91,7 +91,7 @@ StringArray readColumnsName(FILE* f)
     
     int i = 0;
     while ((fgets(temp, STRING_SIZE, f) != NULL) && (strstr(temp, "data") == NULL)) {
-        if ((strstr(temp, "        ")) != NULL && (strstr(temp, "            ")) == NULL) {
+        if ((strstr(temp, TAB TAB)) != NULL && (strstr(temp, TAB TAB TAB)) == NULL) {
             temp[strlen(temp)-2] = '\0';
             columnsName = appendValueToStringArray(columnsName, temp + 8);
             i++;
@@ -119,7 +119,7 @@ StringArray readData(FILE* f)
     
     int i = 0;
     while ((fgets(temp, STRING_SIZE, f) != NULL) && (strstr(temp, "-") != NULL)) {
-        if ((strstr(temp, "        ")) != NULL && (strstr(temp, "            ")) == NULL) {
+        if ((strstr(temp, TAB TAB)) != NULL && (strstr(temp, TAB TAB TAB)) == NULL) {
             temp[strlen(temp)-2] = '\0';
             data = appendValueToStringArray(data, temp + 8);
             i++;

@@ -6,10 +6,9 @@
 //  Copyright © 2017 Groupe 16. All rights reserved.
 //
 
-#ifndef read_table_h
-#define read_table_h
+#ifndef READ_TABLE
+#define READ_TABLE
 
-#include <stdio.h>
 #include "config.h"
 
 void parseData(StringArray data, Table *currentTable);
