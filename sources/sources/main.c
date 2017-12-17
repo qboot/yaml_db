@@ -41,6 +41,8 @@ int main(int argc, const char *argv[])
 //
 void entryLoop()
 {
+    createRootDir();
+    
     Manager manager = {DB_FILENAME, createFile(DB_FILENAME)};
     char *currentDatabase = malloc(sizeof(char)*STRING_SIZE);
     strcpy(currentDatabase, "");

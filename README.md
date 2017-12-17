@@ -13,7 +13,7 @@ Check your Xcode version is > 9.0
 - Go to `Product > Scheme > Edit Scheme...`
 - Click on `options` tab
 - Check `use custom working directory` checkbox
-- Select the path to your project directory
+- Select the path to `databases` in your project directory
 - Save
 
 ## Database samples

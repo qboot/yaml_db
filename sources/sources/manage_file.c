@@ -221,6 +221,23 @@ void removeDir(const char *dirname)
 }
 
 //
+// Create a root directory named `dirname`
+//
+void createRootDir()
+{
+    struct stat stProject = {0};
+    struct stat stDatabase = {0};
+    
+    if (stat(PROJECT, &stProject) == -1) {
+        mkdir(PROJECT, 0777);
+    }
+    
+    if (stat(DB_PATH, &stDatabase) == -1) {
+        mkdir(DB_PATH, 0777);
+    }
+}
+
+//
 // Check if given name is a valid one (0-9 a-z A-Z and _ allowed)
 // Return 1 if yes, else 0
 //

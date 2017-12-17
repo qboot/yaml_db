@@ -11,8 +11,9 @@
 #define TAB "    "
 #define STRING_SIZE 255
 #define ARRAY_CAPACITY 20
+#define PROJECT "yaml_db"
 #define DB_FILENAME "databases"
-#define DB_PATH DB_FILENAME "/"
+#define DB_PATH PROJECT "/" DB_FILENAME "/"
 
 typedef struct {
     char *data;
