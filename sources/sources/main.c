@@ -13,6 +13,9 @@
 #include "../headers/manage_file.h"
 #include "../headers/manage_array.h"
 #include "../headers/manage_entry.h"
+#include "../headers/manage_database.h"
+#include "../headers/read_table.h"
+#include "../headers/read_file.h"
 
 static void entryLoop(void);
 static int isExitCommand(char *command);
@@ -81,7 +84,7 @@ int isExitCommand(char *command)
     }
     
     trimTrailingSpaces(cleanCommand);
-    
+
     if (strcmp(cleanCommand, "exit") == 0 || strcmp(cleanCommand, "quit") == 0) {
         return 1;
     }

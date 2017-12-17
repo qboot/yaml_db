@@ -311,3 +311,25 @@ Column* getAllColumns(const Database database, const Table table, int *nbColumns
     
     return columns;
 }
+
+void freeTable(Table *currentTable)
+{
+    for (int i = 0; i < currentTable->nbRows; i++) {
+        for (int j = 0; j < currentTable->rows[i].nbCells; j++)
+        {
+            free(currentTable->rows[i].cells[j].data);
+        }
+        free(currentTable->rows[i].cells);
+    }
+    free(currentTable->rows);
+    
+    for (int i = 0; i < currentTable->nbColumns; i++) {
+        free(currentTable->columns[i].name);
+        free(currentTable->columns[i].type);
+        free(currentTable->columns[i].defaultValue);
+        free(currentTable->columns[i].foreignKey);
+    }
+    free(currentTable->columns);
+    
+    free(currentTable);
+}

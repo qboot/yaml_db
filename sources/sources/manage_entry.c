@@ -14,8 +14,11 @@
 #include "../headers/manage_array.h"
 #include "../headers/manage_entry.h"
 #include "../headers/manage_parsing.h"
+#include "../headers/read_file.h"
+#include "../headers/read_table.h"
 
 static void showErrorMessage(void);
+static void showUserHelp(void);
 static void explodeCondition(StringArray *conditions, char *string, char *position, char *delimiter);
 
 //
@@ -70,6 +73,11 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
         strcat(entryPart, charToString);
     }
     
+    if (strcmp(entryArray->data[0], "HELP") == 0) {
+        showUserHelp();
+        return;
+    }
+    
     if (entryArray->size < 2) {
         showErrorMessage();
         return;
@@ -79,24 +87,39 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
     
     if (strcmp(entryArray->data[0], "SELECT") == 0) {
         
-        // INNER JOIN SELECT
+        if (strcmp(currentDatabase, "") == 0) {
+            printf("Oops! No database selected.\n");
+            freeStringArray(entryArray);
+            return;
+        }
+        
+        Table currentTable = findAllRecords(currentDatabase, entryArray->data[3]);
+
+        // SELECT WHERE
         
         if (entryArray->size > 4) {
-            printf("launch the SELECT function with an INNER JOIN\n");
-            printf("select : %s\n", entryArray->data[1]); // parsedEntry[1] is what to select
-            printf("from table : %s\n", entryArray->data[3]); // parsedEntry[3] is the first table
-            printf("join with : %s\n", entryArray->data[6]); // parsedEntry[6] is the second table
-            printf("on : %s ", entryArray->data[8]); // parsedEntry[8] is the column from first table
-            printf("equals %s\n", entryArray->data[10]); // parsedEntry[10] is the column from second table
+
+            if (strcmp(entryArray->data[6], "=") == 0)
+            {
+                int columnPlace = searchColumnPlace(&currentTable, entryArray->data[5]);
+                currentTable = searchSpecificData(&currentTable, columnPlace, entryArray->data[7]);
+            }
+            else if (strcmp(entryArray->data[6], "LIKE") == 0)
+            {
+                int columnPlace = searchColumnPlace(&currentTable, entryArray->data[5]);
+                currentTable = searchData(&currentTable, columnPlace, entryArray->data[7]);
+            }
+            
         }
         
-        // BASIC SELECT
-        
-        else {
-            printf("launch the SELECT function\n");
-            printf("select : %s\n", entryArray->data[1]); // parsedEntry[1] is what to select
-            printf("from table : %s\n", entryArray->data[3]); // parsedEntry[3] is the table
+        // SELECT specific column
+        if (strcmp(entryArray->data[1], "*") != 0)
+        {
+            searchSpecificColumn(&currentTable, entryArray->data[1]);
         }
+
+        printAllResult(&currentTable);
+        
         
     }
     
@@ -351,7 +374,7 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
     else if(strcmp(entryArray->data[0], "SHOW") == 0){
         
         if (strcmp(entryArray->data[1], "DATABASES") == 0) {
-            printf("showDatabases();\n");
+            showDatabases();
         }
         else if (strcmp(entryArray->data[1], "TABLES") == 0) {
             printf("showTables();\n");
@@ -403,4 +426,37 @@ void explodeCondition(StringArray *conditions, char *string, char *position, cha
     char value[STRING_SIZE] = "";
     strncpy(value, string+beginning, length);
     appendToStringArray(conditions, value);
+}
+
+void showUserHelp()
+{
+    printf("\nWelcome to the user manual!\n");
+    printf("\n");
+    printf("----------------------------\n");
+    printf("   -                    -   \n");
+    printf("  -     USER MANUAL      -  \n");
+    printf("   -                    -   \n");
+    printf("----------------------------\n");
+    printf("\nWrite your query after : \"yaml_db >\"\n");
+    printf("\nKeywords from SQL must be written in capital\n");
+    printf("Query must end with \";\"\n");
+    printf("\nUsers can write values with quotes, only if the values is a string\n");
+    printf("Users cans use simple or double quote.\n");
+    printf("\n\"INSERT INTO\" query works with explicit and implicit column name.\n");
+    printf("With explicit name, users just have to specify some colmun name\n");
+    printf("With implicit users must set value to every column\n");
+    printf("\nTo read datas, users can select all columns, a specific column.\n");
+    printf("Users can use where condition.\n");
+    printf("Where coniditon works with \"LIKE\" or with \"=\".\n");
+    printf("\nHere is some query exemples users can use :\n\n");
+    printf("SHOW DATABASES;\n");
+    printf("USE db_name;\n");
+    printf("CREATE TABLE table_name (col1 type, col2 type, ...);\n");
+    printf("INSERT INTO table_name (col1, col2) VALUES (val1, val2);\n");
+    printf("INSERT INTO table_name (val1, val2);\n");
+    printf("UPDATE table_name SET col1 = val1, col2 = val2 WHERE id = 1 OR name = quentin;\n");
+    printf("DELETE FROM table_name WHERE id = 1 AND name != quentin OR age = 22;\n");
+    printf("DROP TABLE table_name;\nDROP DATABASE db_name;\n");
+    printf("EXIT; QUIT;\n");
+    return;
 }

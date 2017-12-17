@@ -15,6 +15,8 @@
 		66A181931FDD70E4002C675F /* manage_parsing.c in Sources */ = {isa = PBXBuildFile; fileRef = 66A181911FDD70E4002C675F /* manage_parsing.c */; };
 		66A181941FDD70E4002C675F /* manage_entry.c in Sources */ = {isa = PBXBuildFile; fileRef = 66A181921FDD70E4002C675F /* manage_entry.c */; };
 		66A181961FDD7583002C675F /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 667BDAD11F9CE1A5009B818D /* main.c */; };
+		E80F36301FDD89A10030660A /* read_file.c in Sources */ = {isa = PBXBuildFile; fileRef = E80F362F1FDD89A10030660A /* read_file.c */; };
+		E83BFB811FC9E6B400A5B18D /* read_table.c in Sources */ = {isa = PBXBuildFile; fileRef = E83BFB801FC9E6B400A5B18D /* read_table.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -55,6 +57,10 @@
 		66A181901FDD70DB002C675F /* manage_parsing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = manage_parsing.h; sourceTree = "<group>"; };
 		66A181911FDD70E4002C675F /* manage_parsing.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = manage_parsing.c; sourceTree = "<group>"; };
 		66A181921FDD70E4002C675F /* manage_entry.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = manage_entry.c; sourceTree = "<group>"; };
+		E80F362E1FDD89A10030660A /* read_file.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = read_file.h; sourceTree = "<group>"; };
+		E80F362F1FDD89A10030660A /* read_file.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = read_file.c; sourceTree = "<group>"; };
+		E83BFB7F1FC9E6B400A5B18D /* read_table.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = read_table.h; sourceTree = "<group>"; };
+		E83BFB801FC9E6B400A5B18D /* read_table.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = read_table.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +118,8 @@
 				660339EF1FD4BA0600D9D604 /* manage_row.c */,
 				66A181921FDD70E4002C675F /* manage_entry.c */,
 				66A181911FDD70E4002C675F /* manage_parsing.c */,
+				E83BFB801FC9E6B400A5B18D /* read_table.c */,
+				E80F362F1FDD89A10030660A /* read_file.c */,
 			);
 			path = sources;
 			sourceTree = "<group>";
@@ -127,6 +135,8 @@
 				660339F11FD4BAAA00D9D604 /* manage_row.h */,
 				66A1818F1FDD70DB002C675F /* manage_entry.h */,
 				66A181901FDD70DB002C675F /* manage_parsing.h */,
+				E83BFB7F1FC9E6B400A5B18D /* read_table.h */,
+				E80F362E1FDD89A10030660A /* read_file.h */,
 			);
 			path = headers;
 			sourceTree = "<group>";
@@ -236,6 +246,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E83BFB811FC9E6B400A5B18D /* read_table.c in Sources */,
+				E80F36301FDD89A10030660A /* read_file.c in Sources */,
 				6654B3771F9D4A42007EE525 /* manage_file.c in Sources */,
 				6654B3791F9D4A6C007EE525 /* manage_database.c in Sources */,
 				66A181961FDD7583002C675F /* main.c in Sources */,

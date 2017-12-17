@@ -17,5 +17,6 @@ int createTableStructure(const Database database, const Table table);
 int hasColumn(const Database database, const Table table, const Column column);
 void removeDataTilde(const Database database, const Table table);
 Column* getAllColumns(const Database database, const Table table, int *nbColumns);
+void freeTable(Table *currentTable);
 
 #endif
