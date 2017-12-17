@@ -86,6 +86,8 @@ int isExitCommand(char *command)
     if (strcmp(cleanCommand, "exit") == 0 || strcmp(cleanCommand, "quit") == 0) {
         return 1;
     }
+    
+    return 0;
 }
 
 void testReadtable() {    
@@ -145,5 +147,5 @@ void testReadtable() {
     
     //showDatabases(managerPath);
     
-    return 0;
+    return;
 }
