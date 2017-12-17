@@ -428,6 +428,9 @@ void explodeCondition(StringArray *conditions, char *string, char *position, cha
     appendToStringArray(conditions, value);
 }
 
+//
+// Provide help to the users, with the query HELP;
+//
 void showUserHelp()
 {
     printf("\nWelcome to the user manual!\n");
