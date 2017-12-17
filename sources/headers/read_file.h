@@ -11,7 +11,7 @@
 
 #include "config.h"
 
-void showDatabases(char* managerPath);
+void showDatabases(void);
 Table findAllRecords(char* db_name, char* table_name);
 StringArray readColumnsName(FILE* f);
 StringArray readData(FILE* f);

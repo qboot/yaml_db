@@ -14,6 +14,8 @@
 #include "../headers/manage_array.h"
 #include "../headers/manage_entry.h"
 #include "../headers/manage_parsing.h"
+#include "../headers/read_file.h"
+#include "../headers/read_table.h"
 
 static void showErrorMessage(void);
 static void explodeCondition(StringArray *conditions, char *string, char *position, char *delimiter);
@@ -79,24 +81,39 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
     
     if (strcmp(entryArray->data[0], "SELECT") == 0) {
         
-        // INNER JOIN SELECT
+        if (strcmp(currentDatabase, "") == 0) {
+            printf("Oops! No database selected.\n");
+            freeStringArray(entryArray);
+            return;
+        }
+        
+        Table currentTable = findAllRecords(currentDatabase, entryArray->data[3]);
+
+        // SELECT WHERE
         
         if (entryArray->size > 4) {
-            printf("launch the SELECT function with an INNER JOIN\n");
-            printf("select : %s\n", entryArray->data[1]); // parsedEntry[1] is what to select
-            printf("from table : %s\n", entryArray->data[3]); // parsedEntry[3] is the first table
-            printf("join with : %s\n", entryArray->data[6]); // parsedEntry[6] is the second table
-            printf("on : %s ", entryArray->data[8]); // parsedEntry[8] is the column from first table
-            printf("equals %s\n", entryArray->data[10]); // parsedEntry[10] is the column from second table
+
+            if (strcmp(entryArray->data[6], "=") == 0)
+            {
+                int columnPlace = searchColumnPlace(&currentTable, entryArray->data[5]);
+                currentTable = searchSpecificData(&currentTable, columnPlace, entryArray->data[7]);
+            }
+            else if (strcmp(entryArray->data[6], "LIKE") == 0)
+            {
+                int columnPlace = searchColumnPlace(&currentTable, entryArray->data[5]);
+                currentTable = searchData(&currentTable, columnPlace, entryArray->data[7]);
+            }
+            
         }
         
-        // BASIC SELECT
-        
-        else {
-            printf("launch the SELECT function\n");
-            printf("select : %s\n", entryArray->data[1]); // parsedEntry[1] is what to select
-            printf("from table : %s\n", entryArray->data[3]); // parsedEntry[3] is the table
+        // SELECT specific column
+        if (strcmp(entryArray->data[1], "*") != 0)
+        {
+            searchSpecificColumn(&currentTable, entryArray->data[1]);
         }
+
+        printAllResult(&currentTable);
+        
         
     }
     
@@ -351,7 +368,7 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
     else if(strcmp(entryArray->data[0], "SHOW") == 0){
         
         if (strcmp(entryArray->data[1], "DATABASES") == 0) {
-            printf("showDatabases();\n");
+            showDatabases();
         }
         else if (strcmp(entryArray->data[1], "TABLES") == 0) {
             printf("showTables();\n");
@@ -379,6 +396,66 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
     
     freeStringArray(entryArray);
 }
+/*
+void testReadtable() {
+    char *manager = DB_FILENAME;
+    char *managerPath = createFilePath(manager);
+    
+    
+    // Exemple read-table
+    char *requete = "select";
+    char *table = "person";
+    StringArray where = {
+        malloc(ARRAY_CAPACITY * sizeof(int)),
+        0,
+        ARRAY_CAPACITY
+    };
+    where = appendValueToStringArray(where, "username");
+    where = appendValueToStringArray(where, "gender");
+    StringArray value = {
+        malloc(ARRAY_CAPACITY * sizeof(int)),
+        0,
+        ARRAY_CAPACITY
+    };
+    value = appendValueToStringArray(value, "%osie McQui%");
+    value = appendValueToStringArray(value, "%F%");
+    char *condition = "LIKE";
+    char *column = "";
+    
+    // read the data in a given table
+    Table currentTable = findAllRecords(managerPath, table);
+    
+    // in case of condition where =
+    // for each condition filter datas
+    if (where.size > 0 && strcmp(condition, "=") == 0)
+    {
+        for (int i = 0; i < where.size; i ++)
+        {
+            int columnPlace = searchColumnPlace(&currentTable, where.data[i]);
+            currentTable = searchSpecificData(&currentTable, columnPlace, value.data[i]);
+        }
+    }
+    // in case of condition where =
+    // for each condition filter datas
+    else if (where.size > 0 && strcmp(condition, "LIKE") == 0)
+    {
+        for (int i = 0; i < where.size; i ++)
+        {
+            int columnPlace = searchColumnPlace(&currentTable, where.data[i]);
+            currentTable = searchData(&currentTable, columnPlace, value.data[i]);
+        }
+    }
+    // in case of select specific column
+    if (column != NULL && strcmp(column, "") != 0)
+    {
+        searchSpecificColumn(&currentTable, column);
+    }
+    printAllResult(&currentTable);
+    
+    //showDatabases(managerPath);
+    
+    return;
+}*/
 
 //
 // Print default error message : invalid SQL command
@@ -404,3 +481,4 @@ void explodeCondition(StringArray *conditions, char *string, char *position, cha
     strncpy(value, string+beginning, length);
     appendToStringArray(conditions, value);
 }
+

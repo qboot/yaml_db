@@ -114,8 +114,12 @@ Table searchData(Table *currentTable, int columnPlace, char *dataSearched)
     newTable.nbRows = 0;
     newTable.rows = malloc(currentTable->nbRows);
     
-    if (dataSearched[0] == '%' && dataSearched[strlen(dataSearched) - 1] == '%')
-    {
+    if (dataSearched[0] == '"' && dataSearched[strlen(dataSearched) - 1] == '"') {
+        dataSearched += 1;
+        dataSearched[strlen(dataSearched) - 1] = '\0';
+    }
+    
+    if (dataSearched[0] == '%' && dataSearched[strlen(dataSearched) - 1] == '%') {
         dataSearched += 1;
         dataSearched[strlen(dataSearched) - 1] = '\0';
         
@@ -211,12 +215,13 @@ void searchSpecificColumn(Table *currentTable, char *columnName)
  **/
 void clearUnusedColumn(Table *currentTable, int columnPlace)
 {
-    Row *newRow = malloc(currentTable->nbRows);
+    Row *newRow = malloc(currentTable->nbRows * sizeof(Row));
+    
     for (int i = 0; i < currentTable->nbRows; i++)
     {
-        newRow->nbCells = 1;
-        newRow->cells = malloc(sizeof(STRING_SIZE));
-        newRow->cells[0] = currentTable->rows[i].cells[columnPlace];
+        newRow[i].nbCells = 1;
+        newRow[i].cells = malloc(sizeof(STRING_SIZE));
+        newRow[i].cells[0] = currentTable->rows[i].cells[columnPlace];
         free(currentTable->rows[i].cells);
     }
     currentTable->rows = newRow;

@@ -23,9 +23,9 @@
 /**
  // read the name of all databases
 **/
-void showDatabases(char* managerPath)
+void showDatabases()
 {
-    FILE* file = fopen(managerPath, "r");
+    FILE* file = fopen("yaml_db/databases/databases.yml", "r");
     if (file != NULL)
     {
         char databaseName[STRING_SIZE];
@@ -35,7 +35,7 @@ void showDatabases(char* managerPath)
             }
         }
     }
-
+    fclose(file);
 }
 
 /**
@@ -46,10 +46,10 @@ void showDatabases(char* managerPath)
 Table findAllRecords(char* db_name, char* table_name)
 {
     char *table_file = createFilePath(table_name);
-
+    char *db_file = createFilePath(db_name);
     Table currentTable;
     
-    if(!filesFound(db_name, table_name, table_file)) {
+    if(!filesFound(db_file, table_name, table_file)) {
         return currentTable;
     }
 
@@ -68,6 +68,8 @@ Table findAllRecords(char* db_name, char* table_name)
     StringArray data = readData(f);
     parseData(data, &currentTable);
 
+    fclose(f);
+    
     return currentTable;
 }
 
@@ -137,7 +139,7 @@ StringArray readData(FILE* f)
  **/
 int filesFound(char *db_name, char *table_name, char *table_file)
 {
-    
+ 
     if (!isFile(db_name)) {
         printf("the database doesn't exist\n");
         return 0;

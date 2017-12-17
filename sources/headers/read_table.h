@@ -18,5 +18,6 @@ Table searchSpecificData(Table *currentTable, int columnPlace, char *dataSearche
 Table searchData(Table *currentTable, int columnPlace, char *dataSearched);
 void searchSpecificColumn(Table *currentTable, char *columnName);
 void clearUnusedColumn(Table *currentTable, int columnPlace);
+int selectCount(Table *currentTable);
 #endif
 
