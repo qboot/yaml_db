@@ -25,7 +25,8 @@
 **/
 void showDatabases()
 {
-    FILE* file = fopen("yaml_db/databases/databases.yml", "r");
+    char *databasePath = createFilePath(DB_FILENAME);
+    FILE* file = fopen(databasePath, "r");
     if (file != NULL)
     {
         char databaseName[STRING_SIZE];
@@ -72,8 +73,6 @@ Table findAllRecords(char* db_name, char* table_name)
     
     return currentTable;
 }
-
-
 
 
 /**
