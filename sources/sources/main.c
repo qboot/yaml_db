@@ -21,7 +21,6 @@ static void entryLoop(void);
 static int isExitCommand(char *command);
 
 int main(int argc, const char *argv[])
-<<<<<<< HEAD
 {
     printf("Welcome to yaml_db project! \n");
     printf("\n");
@@ -89,10 +88,12 @@ int isExitCommand(char *command)
     }
 }
 
-void test-readtable() {    
+void testReadtable() {    
     char *manager = DB_FILENAME;
     char *managerPath = createFilePath(manager);
     
+    
+    // Exemple read-table
     char *requete = "select";
     char *table = "person";
     StringArray where = {
@@ -111,9 +112,12 @@ void test-readtable() {
     value = appendValueToStringArray(value, "%F%");
     char *condition = "LIKE";
     char *column = "";
-
     
-     Table currentTable = findAllRecords(managerPath, table);
+    // read the data in a given table
+    Table currentTable = findAllRecords(managerPath, table);
+    
+    // in case of condition where =
+    // for each condition filter datas
     if (where.size > 0 && strcmp(condition, "=") == 0)
     {
         for (int i = 0; i < where.size; i ++)
@@ -122,6 +126,8 @@ void test-readtable() {
             currentTable = searchSpecificData(&currentTable, columnPlace, value.data[i]);
         }
     }
+    // in case of condition where =
+    // for each condition filter datas
     else if (where.size > 0 && (strcmp(condition, "like") == 0 || strcmp(condition, "LIKE") == 0))
     {
         for (int i = 0; i < where.size; i ++)
@@ -130,6 +136,7 @@ void test-readtable() {
             currentTable = searchData(&currentTable, columnPlace, value.data[i]);
         }
     }
+    // in case of select specific column
     if (column != NULL && strcmp(column, "") != 0)
     {
         searchSpecifiColumn(&currentTable, column);
