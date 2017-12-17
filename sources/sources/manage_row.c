@@ -14,6 +14,8 @@
 #include "../headers/manage_array.h"
 
 static void freeColumns(Column *columns, int *nbColumns);
+static int checkWhenConditionSucceed(Condition condition, int *shouldChange);
+static int checkWhenConditionFailed(Condition condition, int *shouldChange);
 
 //
 // Parse a row string `- ["1","2","3","4"]` to an array of values
@@ -320,26 +322,27 @@ int deleteRows(const Database database, const Table table, const int nbCondition
         // create a `row` array which is an array of current line values
         StringArray *row = parseRow(line);
         int shouldBeDeleted = 0;
+        int shouldStop = 0;
         
-        // check if row is concerned by `where` claused
-        // foreach column in table -> foreach condition
-        // if condition concerned column x, if row value matches for column x, row should be deleted
-        for (int i = 0; i < *nbColumns; ++i) {
-            for (int j = 0; j < nbConditions; ++j) {
-                if (strcmp(conditions[j].type, "=") == 0) {
-                    if (strcmp(conditions[j].column, columns[i].name) == 0) {
-                        if (strcmp(conditions[j].value, row->data[i]) == 0) {
-                            shouldBeDeleted = 1;
+        for (int i = 0; i < nbConditions; ++i) {
+            if (shouldStop) {
+                break;
+            }
+            
+            for (int j = 0; j < *nbColumns; ++j) {
+                if (strcmp(conditions[i].column, columns[j].name) == 0) {
+                    // Condition `=`
+                    if (strcmp(conditions[i].type, "=") == 0) {
+                        if (strcmp(conditions[i].value, row->data[j]) == 0) {
+                            shouldStop = checkWhenConditionSucceed(conditions[i], &shouldBeDeleted);
                         } else {
-                            shouldBeDeleted = 0;
+                            shouldStop = checkWhenConditionFailed(conditions[i], &shouldBeDeleted);
                         }
-                    }
-                } else if (strcmp(conditions[i].type, "!=") == 0) {
-                    if (strcmp(conditions[j].column, columns[i].name) == 0) {
-                        if (strcmp(conditions[j].value, row->data[i]) != 0) {
-                            shouldBeDeleted = 1;
+                    } else if (strcmp(conditions[i].type, "!=") == 0) {
+                        if (strcmp(conditions[i].value, row->data[j]) != 0) {
+                            shouldStop = checkWhenConditionSucceed(conditions[i], &shouldBeDeleted);
                         } else {
-                            shouldBeDeleted = 0;
+                            shouldStop = checkWhenConditionFailed(conditions[i], &shouldBeDeleted);
                         }
                     }
                 }
@@ -363,6 +366,16 @@ int deleteRows(const Database database, const Table table, const int nbCondition
         removeLine(tablePath, rowsToDelete->data[i]-i);
     }
     
+    if (rowsToDelete->size == 0) {
+        // free memory
+        freeColumns(columns, nbColumns);
+        freeIntArray(rowsToDelete);
+        free(tablePath);
+        
+        printf("Oops. No matching row found in `%s`.\n", table.name);
+        return 0;
+    }
+    
     // free memory
     freeColumns(columns, nbColumns);
     freeIntArray(rowsToDelete);
@@ -370,6 +383,48 @@ int deleteRows(const Database database, const Table table, const int nbCondition
     
     printf("Row(s) deleted from `%s`.\n", table.name);
     return 1;
+}
+
+//
+// If condition succeed:
+// Check if condition matches depending on previous one and logical operator
+//
+int checkWhenConditionSucceed(Condition condition, int *shouldChange)
+{
+    if (strcmp(condition.logicalOperator, "OR") == 0 && *shouldChange) {
+        return 1;
+    } else if (strcmp(condition.logicalOperator, "OR") == 0 && !*shouldChange) {
+        *shouldChange = 1;
+    } else if (strcmp(condition.logicalOperator, "AND") == 0 && *shouldChange) {
+        *shouldChange = 1;
+    } else if (strcmp(condition.logicalOperator, "AND") == 0 && !*shouldChange) {
+        *shouldChange = 0;
+    } else {
+        *shouldChange = 1;
+    }
+
+    return 0;
+}
+
+//
+// If condition failed:
+// Check if condition matches depending on previous one and logical operator
+//
+int checkWhenConditionFailed(Condition condition, int *shouldChange)
+{
+    if (strcmp(condition.logicalOperator, "OR") == 0 && shouldChange) {
+        return 1;
+    } else if (strcmp(condition.logicalOperator, "OR") == 0 && !*shouldChange) {
+        *shouldChange = 0;
+    } else if (strcmp(condition.logicalOperator, "AND") == 0 && *shouldChange) {
+        *shouldChange = 0;
+    } else if (strcmp(condition.logicalOperator, "AND") == 0 && !*shouldChange) {
+        *shouldChange = 0;
+    } else {
+        *shouldChange = 0;
+    }
+    
+    return 0;
 }
 
 //

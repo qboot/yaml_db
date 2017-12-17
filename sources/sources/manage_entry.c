@@ -249,13 +249,13 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
             conditions[j].type = conditionsArray->data[i+1];
             conditions[j].value = conditionsArray->data[i+2];
             
-            if (i + 3 != conditionsArray->size && i != 0) {
-                conditions[j].logicalOperator = conditionsArray->data[i+3];
-                i += 4;
+            if (i == 0) {
+                conditions[j].logicalOperator = "NULL";
             } else {
-                i += 3;
+                conditions[j].logicalOperator = conditionsArray->data[i-1];
             }
             
+            i += 4;
             ++j;
         }
         
