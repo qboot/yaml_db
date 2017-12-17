@@ -10,8 +10,8 @@
 
 #include "config.h"
 
-void createDatabase(const Manager manager, const Database database);
-void dropDatabase(const Manager manager, const Database database);
+int createDatabase(const Manager manager, const Database database);
+int dropDatabase(const Manager manager, const Database database);
 int hasDatabase(const Manager manager, const Database database);
 int isDatabase(const Database database);
 

@@ -16,14 +16,16 @@
 //
 // Create a new table
 //
-void createTable(const Database database, const Table table)
+int createTable(const Database database, const Table table)
 {
     if (isDatabase(database) == 0) {
-        return;
+        printf("Oops! Database `%s` doesn't exist.\n", database.name);
+        return 0;
     }
     
     if (hasTable(database, table) != 0) {
-        return;
+        printf("Oops! Table `%s` already exists.\n", table.name);
+        return 0;
     }
     
     char *databasePath = createFilePath(database.name);
@@ -43,19 +45,30 @@ void createTable(const Database database, const Table table)
     fclose(file);
     free(databasePath);
     
-    createTableStructure(database, table);
+    if (createTableStructure(database, table)) {
+        printf("New table `%s` created!\n", table.name);
+        return 1;
+    }
+    
+    return 0;
 }
 
 //
 // Drop an existing table
 //
-void dropTable(const Database database, const Table table)
+int dropTable(const Database database, const Table table)
 {
+    if (isDatabase(database) == 0) {
+        printf("Oops! Database `%s` doesn't exist.\n", database.name);
+        return 0;
+    }
+    
     int lineNumber = hasTable(database, table);
     
     // if table doesn't exist, stop here
     if (lineNumber == 0) {
-        return;
+        printf("Oops! Table `%s` doesn't exist.\n", table.name);
+        return 0;
     }
     
     removeFileInDir(table.name, database.name);
@@ -63,6 +76,8 @@ void dropTable(const Database database, const Table table)
     char *databasePath = createFilePath(database.name);
     removeLine(databasePath, lineNumber);
     free(databasePath);
+    printf("Table `%s` dropped!\n", table.name);
+    return 1;
 }
 
 //
@@ -81,8 +96,14 @@ int hasTable(const Database database, const Table table)
 //
 // Create table structure with all columns
 //
-void createTableStructure(const Database database, const Table table)
+int createTableStructure(const Database database, const Table table)
 {
+    // table name is not valid, stop here
+    if (isValidName(table.name) == 0) {
+        printf("Table name should only contain 0-9 a-z A-Z and _ characters.\n");
+        return 0;
+    }
+    
     char *tablePath = createFileInDir(table.name, database.name);
     
     FILE *file = fopen(tablePath, "a");
@@ -96,25 +117,33 @@ void createTableStructure(const Database database, const Table table)
     fputs(TAB "struct:\n", file);
     
     int i = 0;
+    int error = 0;
+    char *allowedTypes[] = {"int", "float", "string", "char"};
+    int allowedTypesSize = 4;
     
     for (i = 0; i < table.nbColumns; ++i) {
         
-        if (!table.columns[i].name || strcmp("", table.columns[i].name) == 0) {
-            // name can't be null or empty
-            // delete table
-            // return error
-            exit(EXIT_FAILURE);
+        if (
+            !table.columns[i].name ||
+            strcmp("", table.columns[i].name) == 0 ||
+            !isValidName(table.columns[i].name)
+        ) {
+            printf("Please check that all your columns have a valid name.\n");
+            error = 1;
+            break;
         }
         
-        if (!table.columns[i].type || strcmp("", table.columns[i].type) == 0) {
-            // type can't be null or empty
-            // delete table
-            // return error
-            exit(EXIT_FAILURE);
+        if (
+            !table.columns[i].type ||
+            strcmp("", table.columns[i].type) == 0 ||
+            !isInArray(allowedTypes, allowedTypesSize, table.columns[i].type)
+        ) {
+            printf("Please check that all your columns have a valid type.\n");
+            printf("Allowed types are : `int`, `float`, `string` and `char`.\n");
+            error = 1;
+            break;
         }
         
-        // check type is one of four available type
-        // make a function do simplify all this stuff
         fprintf(file, TAB TAB "%s:\n", table.columns[i].name);
         fprintf(file, TAB TAB TAB "type: %s\n", table.columns[i].type);
     }
@@ -124,11 +153,13 @@ void createTableStructure(const Database database, const Table table)
     
     free(tablePath);
     
-    // then improve the proto with check if two column has the same name
-    // validate that a col name is correct
-    // has column ?
-    // find good pos in file
-    // name and type are required
+    // error thrown, drop the table
+    if (error) {
+        dropTable(database, table);
+        return 0;
+    }
+    
+    return 1;
 }
 
 //
@@ -174,53 +205,6 @@ int hasColumn(const Database database, const Table table, const Column column)
 }
 
 //
-// Get all column names of a given table
-// Return them in an array of char
-//
-StringArray getColumnNames(const Database database, const Table table)
-{
-    char *tablePath = createFileInDirPath(table.name, database.name);
-    
-    StringArray columnNames = {
-        malloc(ARRAY_CAPACITY * sizeof(int)),
-        0,
-        ARRAY_CAPACITY
-    };
-    
-    FILE *file = fopen(tablePath, "r");
-    
-    if (file == NULL) {
-        free(tablePath);
-        printf("fopen() failed in file %s at line #%d\n", __FILE__, __LINE__);
-        exit(EXIT_FAILURE);
-    }
-    
-    char line[STRING_SIZE] = "";
-    
-    while (fgets(line, STRING_SIZE, file) != NULL) {
-        
-        if (strcmp(line, TAB "data:\n") == 0 || strcmp(line, TAB "data: ~\n") == 0) {
-            break;
-        }
-        
-        if (strstr(line, TAB TAB) == NULL || strstr(line, TAB TAB TAB) != NULL) {
-            continue;
-        }
-        
-        // trim spaces + remove final ':' char
-        line[strlen(line)-2] = '\0';
-        trimSpaces(line);
-        
-        columnNames = appendValueToStringArray(columnNames, line);
-    }
-    
-    fclose(file);
-    free(tablePath);
-    
-    return columnNames;
-}
-
-//
 // Remove ~ in `data: ~` before inserting data
 //
 void removeDataTilde(const Database database, const Table table)
@@ -258,4 +242,72 @@ void removeDataTilde(const Database database, const Table table)
     replaceLine(tablePath, lineNumber, TAB "data:\n");
     
     free(tablePath);
+}
+
+//
+// Get column names & types from a given table
+// Return them in an array of Column
+//
+Column* getAllColumns(const Database database, const Table table, int *nbColumns)
+{
+    char *tablePath = createFileInDirPath(table.name, database.name);
+    
+    StringArray *columnNames = createStringArray();
+    StringArray *columnTypes = createStringArray();
+    
+    FILE *file = fopen(tablePath, "r");
+    
+    if (file == NULL) {
+        free(tablePath);
+        printf("fopen() failed in file %s at line #%d\n", __FILE__, __LINE__);
+        exit(EXIT_FAILURE);
+    }
+    
+    char line[STRING_SIZE] = "";
+    
+    while (fgets(line, STRING_SIZE, file) != NULL) {
+        
+        if (strcmp(line, TAB "data:\n") == 0 || strcmp(line, TAB "data: ~\n") == 0) {
+            break;
+        }
+        
+        if (strstr(line, TAB TAB) == NULL || strstr(line, TAB TAB TAB) != NULL) {
+            
+            // get column types
+            char *result = strstr(line, "type: ");
+            if (result != NULL) {
+                int beginning = (int) (result - line + 6);
+                int length = (int) strlen(line) - beginning;
+                char type[STRING_SIZE] = "";
+                strncpy(type, line+beginning, length);
+                trimSpaces(type);
+                appendToStringArray(columnTypes, type);
+            }
+            
+            continue;
+        }
+        
+        // trim spaces + remove final ':' char
+        line[strlen(line)-2] = '\0';
+        trimSpaces(line);
+        appendToStringArray(columnNames, line);
+    }
+    
+    fclose(file);
+    free(tablePath);
+    
+    Column *columns = malloc(sizeof(Column) * columnNames->size);
+    *nbColumns = columnNames->size;
+    
+    for (int i = 0; i < *nbColumns; ++i) {
+        columns[i].name = malloc(sizeof(char) * STRING_SIZE);
+        columns[i].type = malloc(sizeof(char) * STRING_SIZE);
+        strcpy(columns[i].name, columnNames->data[i]);
+        strcpy(columns[i].type, columnTypes->data[i]);
+    }
+    
+    freeStringArray(columnTypes);
+    freeStringArray(columnNames);
+    
+    return columns;
 }

@@ -13,11 +13,18 @@
 //
 // Create a new database
 //
-void createDatabase(const Manager manager, const Database database)
+int createDatabase(const Manager manager, const Database database)
 {
     // if database already exists, stop here
     if (hasDatabase(manager, database) != 0) {
-        return;
+        printf("Oops! Database `%s` already exists.\n", database.name);
+        return 0;
+    }
+    
+    // database name is not valid, stop here
+    if (isValidName(database.name) == 0) {
+        printf("Database name should only contain 0-9 a-z A-Z and _ characters.\n");
+        return 0;
     }
     
     char *databasePath = createFile(database.name);
@@ -36,23 +43,28 @@ void createDatabase(const Manager manager, const Database database)
     fputs("\n", file);
     fclose(file);
     free(databasePath);
+    printf("New database `%s` created!\n", database.name);
+    return 1;
 }
 
 //
 // Drop an existing database
 //
-void dropDatabase(const Manager manager, const Database database)
+int dropDatabase(const Manager manager, const Database database)
 {
     int lineNumber = hasDatabase(manager, database);
     
     // if database doesn't exist, stop here
     if (lineNumber == 0) {
-        return;
+        printf("Oops! Database `%s` doesn't exist.\n", database.name);
+        return 0;
     }
     
     removeFile(database.name);
     removeDir(database.name);
     removeLine(manager.path, lineNumber);
+    printf("Database `%s` dropped!\n", database.name);
+    return 1;
 }
 
 //

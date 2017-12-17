@@ -12,9 +12,19 @@
 
 void trimSpaces(char *string);
 void trimLeadingSpaces(char *string);
-StringArray manageStringArray(StringArray array);
+void trimTrailingSpaces(char *string);
+int isInArray(char **array, int arraySize, char *value);
+
+// @deprecated
 StringArray appendValueToStringArray(StringArray, char *value);
-IntArray manageIntArray(IntArray array);
 IntArray appendValueToIntArray(IntArray array, int value);
+
+// @new
+StringArray* createStringArray(void);
+IntArray* createIntArray(void);
+void appendToStringArray(StringArray *array, char *value);
+void appendToIntArray(IntArray *array, int value);
+void freeStringArray(StringArray *array);
+void freeIntArray(IntArray *array);
 
 #endif

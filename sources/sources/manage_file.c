@@ -99,13 +99,7 @@ static char* generateFile(const char *filepath, const char *filename)
 // Return a fullpath (root + filename + extension)
 //
 char* createFile(const char *filename)
-{
-    // filename is not valid, stop here
-    if (isValidName(filename) == 0) {
-        printf("Name should only contain 0-9 a-z A-Z and _ characters.\n");
-        exit(EXIT_FAILURE);
-    }
-    
+{    
     char *filepath = createFilePath(filename);
     return generateFile(filepath, filename);
 }
@@ -116,12 +110,6 @@ char* createFile(const char *filename)
 //
 char* createFileInDir(const char *filename, const char *dirname)
 {
-    // filename is not valid, stop here
-    if (isValidName(filename) == 0) {
-        printf("Name should only contain 0-9 a-z A-Z and _ characters.\n");
-        exit(EXIT_FAILURE);
-    }
-    
     char *filepath = createFileInDirPath(filename, dirname);
     return generateFile(filepath, filename);
 }

@@ -59,6 +59,7 @@ typedef struct {
     char *column;
     char *value;
     char *type;
+    char *logicalOperator;
 } Condition;
 
 typedef struct {
