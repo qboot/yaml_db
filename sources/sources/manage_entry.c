@@ -220,7 +220,6 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
         int nbConditions = conditionsArray->size / 4 + 1;
         Condition conditions[nbConditions];
         
-        printf("%d\n", conditionsArray->size);
         for (int i = 0, j = 0; i < conditionsArray->size;) {
             
             conditions[j].column = conditionsArray->data[i];

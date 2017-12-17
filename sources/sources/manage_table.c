@@ -208,15 +208,12 @@ int hasColumn(const Database database, const Table table, const Column column)
 // Get all column names of a given table
 // Return them in an array of char
 //
-StringArray getColumnNames(const Database database, const Table table)
+Column* getAllColumns(const Database database, const Table table, int *nbColumns)
 {
     char *tablePath = createFileInDirPath(table.name, database.name);
     
-    StringArray columnNames = {
-        malloc(ARRAY_CAPACITY * sizeof(int)),
-        0,
-        ARRAY_CAPACITY
-    };
+    StringArray *columnNames = createStringArray();
+    StringArray *columnTypes = createStringArray();
     
     FILE *file = fopen(tablePath, "r");
     
@@ -235,20 +232,48 @@ StringArray getColumnNames(const Database database, const Table table)
         }
         
         if (strstr(line, TAB TAB) == NULL || strstr(line, TAB TAB TAB) != NULL) {
+            
+            // get column types
+            char *result = strstr(line, "type: ");
+            if (result != NULL) {
+                int beginning = (int) (result - line + 6);
+                int length = (int) strlen(line) - beginning;
+                char type[STRING_SIZE] = "";
+                strncpy(type, line+beginning, length);
+                trimSpaces(type);
+                appendToStringArray(columnTypes, type);
+            }
+            
             continue;
         }
         
         // trim spaces + remove final ':' char
         line[strlen(line)-2] = '\0';
         trimSpaces(line);
-        
-        columnNames = appendValueToStringArray(columnNames, line);
+        appendToStringArray(columnNames, line);
     }
     
     fclose(file);
     free(tablePath);
     
-    return columnNames;
+    Column *columns = malloc(sizeof(Column) * columnNames->size);
+    *nbColumns = columnNames->size;
+    
+    for (int i = 0; i < *nbColumns; ++i) {
+        columns[i].name = malloc(sizeof(char) * STRING_SIZE);
+        columns[i].type = malloc(sizeof(char) * STRING_SIZE);
+        columns[i].name = columnNames->data[i];
+        columns[i].type = columnTypes->data[i];
+    }
+    
+    for (int i = 0; i < *nbColumns; ++i) {
+        printf("%s\n", columns[i].name);
+    }
+    
+    freeStringArray(columnTypes);
+    freeStringArray(columnNames);
+    
+    return columns;
 }
 
 //

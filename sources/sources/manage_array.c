@@ -10,6 +10,7 @@
 #include <string.h>
 #include "../headers/manage_array.h"
 
+// @deprecated
 static StringArray manageStringArray(StringArray array);
 static IntArray manageIntArray(IntArray array);
 
@@ -213,8 +214,36 @@ void appendToStringArray(StringArray *array, char *value)
 //
 void freeStringArray(StringArray *array)
 {
-    for (int i = 0; i < array->capacity; ++i) { // or size ????
+    for (int i = 0; i < array->capacity; ++i) {
         free(array->data[i]);
     }
+    free(array->data);
+    free(array);
+}
+
+IntArray* createIntArray()
+{
+    IntArray *array = malloc(sizeof(IntArray));
+    array->data = malloc(sizeof(int *) * ARRAY_CAPACITY);
+    array->size = 0;
+    array->capacity = ARRAY_CAPACITY;
+    
+    return array;
+}
+
+void appendToIntArray(IntArray *array, int value)
+{
+    if (array->size == array->capacity) {
+        array->capacity *= 3;
+        array->data = realloc(array->data, sizeof(int *) * array->capacity);
+    }
+    
+    array->data[array->size] = value;
+    ++array->size;
+}
+
+void freeIntArray(IntArray *array)
+{
+    free(array->data);
     free(array);
 }
