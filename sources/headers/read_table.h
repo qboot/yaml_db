@@ -17,7 +17,7 @@ void printAllResult(Table *currentTable);
 int searchColumnPlace(Table *currentTable, char *columnName);
 Table searchSpecificData(Table *currentTable, int columnPlace, char *dataSearched);
 Table searchData(Table *currentTable, int columnPlace, char *dataSearched);
-void searchSpecifiColumn(Table *currentTable, char *columnName);
+void searchSpecificColumn(Table *currentTable, char *columnName);
 void clearUnusedColumn(Table *currentTable, int columnPlace);
 #endif
 

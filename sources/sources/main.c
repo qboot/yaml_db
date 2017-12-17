@@ -139,7 +139,7 @@ void testReadtable() {
     // in case of select specific column
     if (column != NULL && strcmp(column, "") != 0)
     {
-        searchSpecifiColumn(&currentTable, column);
+        searchSpecificColumn(&currentTable, column);
     }
         printAllResult(&currentTable);
     

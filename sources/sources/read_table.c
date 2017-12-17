@@ -174,7 +174,7 @@ Table searchSpecificData(Table *currentTable, int columnPlace, char *dataSearche
  // When found, delete unused colmun
  // and call the method clearUnusedColumn
  **/
-void searchSpecifiColumn(Table *currentTable, char *columnName)
+void searchSpecificColumn(Table *currentTable, char *columnName)
 {
     Column *newColumns = malloc(sizeof(Column));
     int nbColumn = 0;
