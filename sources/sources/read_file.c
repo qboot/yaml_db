@@ -36,6 +36,7 @@ void showDatabases()
             }
         }
     }
+    free(databasePath);
     fclose(file);
 }
 
@@ -51,6 +52,8 @@ Table findAllRecords(char* db_name, char* table_name)
     Table currentTable;
     
     if(!filesFound(db_file, table_name, table_file)) {
+        free(table_file);
+        free(db_file);
         return currentTable;
     }
 
@@ -70,6 +73,8 @@ Table findAllRecords(char* db_name, char* table_name)
     parseData(data, &currentTable);
 
     fclose(f);
+    free(table_file);
+    free(db_file);
     
     return currentTable;
 }
