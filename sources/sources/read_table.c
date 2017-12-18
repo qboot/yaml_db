@@ -20,10 +20,10 @@
 #include "../headers/manage_array.h"
 
 
-/**
- // For a given data, insert into a Table 'currentTable'
- // value in Row and Cell
- **/
+//
+// For a given data, insert into a Table 'currentTable'
+// value in Row and Cell
+//
 void parseData(StringArray data, Table *currentTable)
 {
     // allocate space for rows.
@@ -56,10 +56,10 @@ void parseData(StringArray data, Table *currentTable)
     return;
 }
 
-/**
- // Print the result for a given 'column_name and
- // for a given 'table'
- **/
+//
+// Print the result for a given 'column_name and
+// for a given 'table'
+//
 void printAllResult(Table *currentTable)
 {
     if (currentTable->nbRows == 0)
@@ -82,10 +82,10 @@ void printAllResult(Table *currentTable)
     }
 }
 
-/**
- // Search in the currentTable the place of the column searched
- // and return the place or -1 if not found
- **/
+//
+// Search in the currentTable the place of the column searched
+// and return the place or -1 if not found
+//
 int searchColumnPlace(Table *currentTable, char *columnName)
 {
     for (int i = 0; i < currentTable->nbColumns; i++) {
@@ -98,12 +98,12 @@ int searchColumnPlace(Table *currentTable, char *columnName)
 
 
 
-/**
- // SQL : Where Like %...%
- // Search in the currentTable if a the data searched is present at the specific
- // columnPlace
- // return the row number if found, -1 if not
- **/
+//
+// SQL : Where Like %...%
+// Search in the currentTable if a the data searched is present at the specific
+// columnPlace
+// return the row number if found, -1 if not
+//
 Table searchData(Table *currentTable, int columnPlace, char *dataSearched)
 {
     Table newTable;
@@ -141,12 +141,12 @@ Table searchData(Table *currentTable, int columnPlace, char *dataSearched)
     return newTable;
 }
 
-/**
- // SQL : where =
- // Search in the currentTable if a the data searched is present at the specific
- // columnPlace
- // return a IntArray which contain all the row number where the data was find
- **/
+//
+// SQL : where =
+// Search in the currentTable if a the data searched is present at the specific
+// columnPlace
+// return a IntArray which contain all the row number where the data was find
+//
 Table searchSpecificData(Table *currentTable, int columnPlace, char *dataSearched)
 {
     Table newTable;
@@ -173,11 +173,11 @@ Table searchSpecificData(Table *currentTable, int columnPlace, char *dataSearche
     return newTable;
 }
 
-/**
- // Search in a given table for a specific column
- // When found, delete unused colmun
- // and call the method clearUnusedColumn
- **/
+//
+// Search in a given table for a specific column
+// When found, delete unused colmun
+// and call the method clearUnusedColumn
+//
 void searchSpecificColumn(Table *currentTable, char *columnName)
 {
     Column *newColumns = malloc(sizeof(Column));
@@ -209,10 +209,10 @@ void searchSpecificColumn(Table *currentTable, char *columnName)
     return;
 }
 
-/**
- // for each rows in the table
- // clear unused columns
- **/
+//
+// for each rows in the table
+// clear unused columns
+//
 void clearUnusedColumn(Table *currentTable, int columnPlace)
 {
     Row *newRow = malloc(currentTable->nbRows * sizeof(Row));
@@ -229,9 +229,9 @@ void clearUnusedColumn(Table *currentTable, int columnPlace)
     return;
 }
 
-/**
- // Return the number of rows in the table
- **/
+//
+// Return the number of rows in the table
+//
 int selectCount(Table *currentTable)
 {
     return currentTable->nbRows;
