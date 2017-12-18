@@ -312,6 +312,9 @@ Column* getAllColumns(const Database database, const Table table, int *nbColumns
     return columns;
 }
 
+//
+// Free memory for a given `currentTable` Table pointer
+//
 void freeTable(Table *currentTable)
 {
     for (int i = 0; i < currentTable->nbRows; i++) {

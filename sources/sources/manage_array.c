@@ -15,6 +15,23 @@ static StringArray manageStringArray(StringArray array);
 static IntArray manageIntArray(IntArray array);
 
 //
+// Trim a string : remove all comma
+//
+void trimComma(char *string)
+{
+    char newString[STRING_SIZE] = "";
+    
+    for (int i = 0; i < strlen(string); ++i) {
+        if (string[i] != ',') {
+            char charToString[] = {string[i], '\0'};
+            strcat(newString, charToString);
+        }
+    }
+    
+    strcpy(string, newString);
+}
+
+//
 // Trim a string : remove all spaces
 //
 void trimSpaces(char *string)

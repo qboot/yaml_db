@@ -19,7 +19,11 @@
 
 static void showErrorMessage(void);
 static void showUserHelp(void);
+static StringArray* explodeEntry(char *entry);
 static void explodeCondition(StringArray *conditions, char *string, char *position, char *delimiter);
+static StringArray* explodeConditions(StringArray *array, int beginning);
+static Condition* createConditionsArray(int nbConditions);
+static void freeConditionsArray(Condition *conditions, int nbConditions);
 
 //
 // Global parsing of user input
@@ -35,51 +39,17 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
         return;
     }
     
-    StringArray *entryArray = createStringArray();
-    char entryPart[STRING_SIZE] = "";
-    int inParenthesis = 0;
-    
-    for (int i = 0; i < strlen(entry); ++i) {
-        if (i == 0) {
-            char charToString[] = {entry[0], '\0'};
-            strcat(entryPart, charToString);
-            continue;
-        }
-        
-        if (
-            (entry[i] == '(' && entry[i-1] != '\\' && !inParenthesis) ||
-            (entry[i] == ')' && entry[i-1] != '\\' && inParenthesis) ||
-            (entry[i] == ' ' && !inParenthesis) ||
-            (entry[i] == ';' && !inParenthesis)
-            ) {
-            
-            if (entry[i] == '(' && entry[i-1] != '\\' && !inParenthesis) {
-                inParenthesis = 1;
-            }
-            
-            if (entry[i] == ')' && entry[i-1] != '\\' && inParenthesis) {
-                inParenthesis = 0;
-            }
-            
-            if (strcmp(entryPart, "") != 0) {
-                appendToStringArray(entryArray, entryPart);
-                strcpy(entryPart, "\0");
-            }
-            
-            continue;
-        }
-        
-        char charToString[] = {entry[i], '\0'};
-        strcat(entryPart, charToString);
-    }
+    StringArray *entryArray = explodeEntry(entry);
     
     if (strcmp(entryArray->data[0], "HELP") == 0) {
         showUserHelp();
+        freeStringArray(entryArray);
         return;
     }
     
     if (entryArray->size < 2) {
         showErrorMessage();
+        freeStringArray(entryArray);
         return;
     }
     
@@ -170,66 +140,13 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
             return;
         }
         
-        if (entryArray->size < 5 && entryArray->size != 3) {
+        if (entryArray->size < 5) {
             showErrorMessage();
             freeStringArray(entryArray);
             return;
         }
         
-        // if entryArray.size == 3, there is no WHERE clause, delete all rows
-        // freeStringArray
-        // return
-        
-        StringArray *conditionsArray = createStringArray();
-
-        for (int i = 4; i < entryArray->size; ++i) {
-
-            char string[STRING_SIZE] = "";
-            strcat(string, entryArray->data[i]);
-
-            if (strlen(string) < 3) {
-                appendToStringArray(conditionsArray, string);
-                continue;
-            }
-
-            char *isDifferent = strstr(string, "!=");
-            if (isDifferent != NULL) {
-                explodeCondition(conditionsArray, string, isDifferent, "!=");
-                continue;
-            }
-
-            char *isLessThanOrEqual = strstr(string, "<=");
-            if (isLessThanOrEqual != NULL) {
-                explodeCondition(conditionsArray, string, isLessThanOrEqual, "<=");
-                continue;
-            }
-
-            char *isGreaterThanOrEqual = strstr(string, ">=");
-            if (isGreaterThanOrEqual != NULL) {
-                explodeCondition(conditionsArray, string, isGreaterThanOrEqual, ">=");
-                continue;
-            }
-
-            char *isLessThan = strstr(string, "<");
-            if (isLessThan != NULL) {
-                explodeCondition(conditionsArray, string, isLessThan, "<");
-                continue;
-            }
-
-            char *isGreaterThan = strstr(string, ">");
-            if (isGreaterThan != NULL) {
-                explodeCondition(conditionsArray, string, isGreaterThan, ">");
-                continue;
-            }
-
-            char *isEqual = strstr(string, "=");
-            if (isEqual != NULL) {
-                explodeCondition(conditionsArray, string, isEqual, "=");
-                continue;
-            }
-
-            appendToStringArray(conditionsArray, string);
-        }
+        StringArray *conditionsArray = explodeConditions(entryArray, 4);
 
         // WHERE clause is not resolvable
         if (conditionsArray->size % 4 - 3 != 0) {
@@ -241,46 +158,137 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
         
         // hydrate conditions
         int nbConditions = conditionsArray->size / 4 + 1;
-        Condition conditions[nbConditions];
+        Condition *conditions = createConditionsArray(nbConditions);
         
         for (int i = 0, j = 0; i < conditionsArray->size;) {
+            strcpy(conditions[j].column, conditionsArray->data[i]);
+            strcpy(conditions[j].type, conditionsArray->data[i+1]);
+            strcpy(conditions[j].value, conditionsArray->data[i+2]);
             
-            conditions[j].column = conditionsArray->data[i];
-            conditions[j].type = conditionsArray->data[i+1];
-            conditions[j].value = conditionsArray->data[i+2];
-            
-            if (i + 3 != conditionsArray->size && i != 0) {
-                conditions[j].logicalOperator = conditionsArray->data[i+3];
-                i += 4;
+            if (i == 0) {
+                strcpy(conditions[j].logicalOperator, "NULL");
             } else {
-                i += 3;
+                strcpy(conditions[j].logicalOperator, conditionsArray->data[i-1]);
             }
             
+            i += 4;
             ++j;
         }
         
-        // DELETE FROM test WHERE id=23 AND age<=19 OR name=quentin;
         Table table = {entryArray->data[2], 0, 0, NULL, NULL};
         Database database = {currentDatabase};
         
         deleteRows(database, table, nbConditions, conditions);
 
-        // free
         freeStringArray(conditionsArray);
+        freeConditionsArray(conditions, nbConditions);
     }
     
     // UPDATE
     
     else if (strcmp(entryArray->data[0], "UPDATE") == 0) {
-        // replaceQuotes(entryArray.data, entryArray.size);
-        printf("launch the UPDATE function\n");
-        printf("Table name : %s\n", entryArray->data[1]); // parsedEntry[1] is the table
-        printf("Column name : %s\n", entryArray->data[3]); // parsedEntry[3] is the column where we change the value
-        printf("New value : %s\n", entryArray->data[5]); // parsedEntry[5] is the new value
-        printf("Column : %s\n", entryArray->data[7]); // parsedEntry[7] is the column
-        printf("Operator : %s\n", entryArray->data[8]); // parsedEntry[8] is the operator
-        printf("Value : %s\n", entryArray->data[9]); // parsedEntry[9] is the value
         
+        if (strcmp(currentDatabase, "") == 0) {
+            printf("Oops! No database selected.\n");
+            freeStringArray(entryArray);
+            return;
+        }
+        
+        if (entryArray->size < 4) {
+            showErrorMessage();
+            freeStringArray(entryArray);
+            return;
+        }
+        
+        if (strcmp(entryArray->data[2], "SET") != 0) {
+            showErrorMessage();
+            freeStringArray(entryArray);
+            return;
+        }
+        
+        StringArray *newValuesArray = createStringArray();
+        StringArray *conditionsArray = createStringArray();
+        int wherePosition = 0;
+        
+        for (int i = 3; i < entryArray->size; ++i) {
+            if (strcmp(entryArray->data[i], "WHERE") == 0) {
+                wherePosition = i;
+                break;
+            }
+            trimComma(entryArray->data[i]);
+            appendToStringArray(newValuesArray, entryArray->data[i]);
+        }
+        
+        if (wherePosition != 0) {
+            for (int i = wherePosition + 1; i < entryArray->size; ++i) {
+                appendToStringArray(conditionsArray, entryArray->data[i]);
+            }
+        }
+        
+        StringArray *newValues = explodeConditions(newValuesArray, 0);
+        StringArray *conditionsExploded = explodeConditions(conditionsArray, 0);
+        freeStringArray(newValuesArray);
+        freeStringArray(conditionsArray);
+        
+        
+        // WHERE clause is not resolvable
+        if (conditionsExploded->size % 4 - 3 != 0) {
+            showErrorMessage();
+            freeStringArray(entryArray);
+            freeStringArray(conditionsExploded);
+            freeStringArray(newValues);
+            return;
+        }
+        
+        // SET clause is not resolvable
+        if (newValues->size % 3 != 0) {
+            showErrorMessage();
+            freeStringArray(entryArray);
+            freeStringArray(conditionsExploded);
+            freeStringArray(newValues);
+            return;
+        }
+        
+        // hydrate conditions
+        int nbConditions = conditionsExploded->size / 4 + 1;
+        Condition *conditions = createConditionsArray(nbConditions);
+        
+        for (int i = 0, j = 0; i < conditionsExploded->size;) {
+            strcpy(conditions[j].column, conditionsExploded->data[i]);
+            strcpy(conditions[j].type, conditionsExploded->data[i+1]);
+            strcpy(conditions[j].value, conditionsExploded->data[i+2]);
+            
+            if (i == 0) {
+                strcpy(conditions[j].logicalOperator, "NULL");
+            } else {
+                strcpy(conditions[j].logicalOperator, conditionsExploded->data[i-1]);
+            }
+            
+            i += 4;
+            ++j;
+        }
+        
+        freeStringArray(conditionsExploded);
+        
+        StringArray *values = createStringArray();
+        Column columns[newValues->size/3];
+        
+        for (int i = 0, j = 0; i < newValues->size;) {
+            columns[j].name = malloc(sizeof(char) * STRING_SIZE);
+            strcpy(columns[j].name, newValues->data[i]);
+            appendToStringArray(values, newValues->data[i+2]);
+            ++j;
+            i += 3;
+        }
+        
+        freeStringArray(newValues);
+        
+        Table table = {entryArray->data[1], newValues->size/3, 0, columns, NULL};
+        Database database = {currentDatabase};
+        
+        updateRows(database, table, values, nbConditions, conditions);
+        
+        freeConditionsArray(conditions, nbConditions);
     }
     
     else if (strcmp(entryArray->data[0], "CREATE") == 0) {
@@ -305,7 +313,6 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
         }
         
         // CREATE TABLE
-        // ( Primary key, not null, auto increment not supported yet ) WIP
         
         else if (strcmp(entryArray->data[1], "TABLE") == 0) {
             
@@ -377,7 +384,14 @@ void parseEntry(Manager manager, char *currentDatabase, char *entry)
             showDatabases();
         }
         else if (strcmp(entryArray->data[1], "TABLES") == 0) {
-            printf("showTables();\n");
+            if (strcmp(currentDatabase, "") == 0) {
+                printf("Oops! No database selected.\n");
+                freeStringArray(entryArray);
+                return;
+            }
+            
+            Database database = {currentDatabase};
+            showTables(database);
         }
         
     }
@@ -412,6 +426,57 @@ void showErrorMessage()
     printf("Check this website for more informations: http://sql.sh/.\n");
 }
 
+//
+// Explode `entry` string to a StringArray
+// Return a StringArray pointer
+//
+StringArray* explodeEntry(char *entry)
+{
+    StringArray *entryArray = createStringArray();
+    char entryPart[STRING_SIZE] = "";
+    int inParenthesis = 0;
+    
+    for (int i = 0; i < strlen(entry); ++i) {
+        if (i == 0) {
+            char charToString[] = {entry[0], '\0'};
+            strcat(entryPart, charToString);
+            continue;
+        }
+        
+        if (
+            (entry[i] == '(' && entry[i-1] != '\\' && !inParenthesis) ||
+            (entry[i] == ')' && entry[i-1] != '\\' && inParenthesis) ||
+            (entry[i] == ' ' && !inParenthesis) ||
+            (entry[i] == ';' && !inParenthesis)
+            ) {
+            
+            if (entry[i] == '(' && entry[i-1] != '\\' && !inParenthesis) {
+                inParenthesis = 1;
+            }
+            
+            if (entry[i] == ')' && entry[i-1] != '\\' && inParenthesis) {
+                inParenthesis = 0;
+            }
+            
+            if (strcmp(entryPart, "") != 0) {
+                appendToStringArray(entryArray, entryPart);
+                strcpy(entryPart, "\0");
+            }
+            
+            continue;
+        }
+        
+        char charToString[] = {entry[i], '\0'};
+        strcat(entryPart, charToString);
+    }
+    
+    return entryArray;
+}
+
+//
+// Explode a `string` depending on a delimiter and its position
+// Add the 3 parts (column, delimiter, value) in `conditions` StringArray
+//
 void explodeCondition(StringArray *conditions, char *string, char *position, char *delimiter)
 {
     int beginning = (int) (position - string + strlen(delimiter));
@@ -440,26 +505,106 @@ void showUserHelp()
     printf("  -     USER MANUAL      -  \n");
     printf("   -                    -   \n");
     printf("----------------------------\n");
-    printf("\nWrite your query after : \"yaml_db >\"\n");
-    printf("\nKeywords from SQL must be written in capital\n");
-    printf("Query must end with \";\"\n");
-    printf("\nUsers can write values with quotes, only if the values is a string\n");
-    printf("Users cans use simple or double quote.\n");
-    printf("\n\"INSERT INTO\" query works with explicit and implicit column name.\n");
-    printf("With explicit name, users just have to specify some colmun name\n");
-    printf("With implicit users must set value to every column\n");
-    printf("\nTo read datas, users can select all columns, a specific column.\n");
-    printf("Users can use where condition.\n");
-    printf("Where coniditon works with \"LIKE\" or with \"=\".\n");
-    printf("\nHere is some query exemples users can use :\n\n");
+    printf("\nYou should type your query after : \"yaml_db >\".\n");
+    printf("All SQL keywords must be written in capital letters.\n");
+    printf("Queries must end with \";\".\n");
+    printf("\n");
     printf("SHOW DATABASES;\n");
-    printf("USE db_name;\n");
-    printf("CREATE TABLE table_name (col1 type, col2 type, ...);\n");
-    printf("INSERT INTO table_name (col1, col2) VALUES (val1, val2);\n");
-    printf("INSERT INTO table_name (val1, val2);\n");
-    printf("UPDATE table_name SET col1 = val1, col2 = val2 WHERE id = 1 OR name = quentin;\n");
-    printf("DELETE FROM table_name WHERE id = 1 AND name != quentin OR age = 22;\n");
-    printf("DROP TABLE table_name;\nDROP DATABASE db_name;\n");
+    printf("SHOW TABLES;\n");
+    printf("USE database;\n");
+    printf("CREATE DATABASE database\n");
+    printf("DROP DATABASE database;\n");
+    printf("CREATE TABLE table (col1 type, col2 type, ...);\n");
+    printf("DROP TABLE table;\n");
+    printf("INSERT INTO table (col1, col2) VALUES (val1, val2);\n");
+    printf("INSERT INTO table (val1, val2);\n");
+    printf("UPDATE table SET col1 = val1, col2 = val2 WHERE col1 = val1 OR col2 = val2;\n");
+    printf("DELETE FROM table WHERE col1 = val1 AND col2 != val2 OR col3 = val3;\n");
     printf("EXIT; QUIT;\n");
     return;
+}
+    
+//
+// Perform a second explode on an `entryArray` for all stuff WHERE-related
+// Let user choose if he wants type id=1 or id = 1
+//
+StringArray* explodeConditions(StringArray *array, int beginning)
+{
+    StringArray *conditionsArray = createStringArray();
+    
+    for (int i = beginning; i < array->size; ++i) {
+        
+        char string[STRING_SIZE] = "";
+        strcat(string, array->data[i]);
+        
+        if (strlen(string) < 3) {
+            appendToStringArray(conditionsArray, string);
+            continue;
+        }
+        
+        char *isDifferent = strstr(string, "!=");
+        if (isDifferent != NULL) {
+            explodeCondition(conditionsArray, string, isDifferent, "!=");
+            continue;
+        }
+        
+        char *isLessThanOrEqual = strstr(string, "<=");
+        if (isLessThanOrEqual != NULL) {
+            explodeCondition(conditionsArray, string, isLessThanOrEqual, "<=");
+            continue;
+        }
+        
+        char *isGreaterThanOrEqual = strstr(string, ">=");
+        if (isGreaterThanOrEqual != NULL) {
+            explodeCondition(conditionsArray, string, isGreaterThanOrEqual, ">=");
+            continue;
+        }
+        
+        char *isLessThan = strstr(string, "<");
+        if (isLessThan != NULL) {
+            explodeCondition(conditionsArray, string, isLessThan, "<");
+            continue;
+        }
+        
+        char *isGreaterThan = strstr(string, ">");
+        if (isGreaterThan != NULL) {
+            explodeCondition(conditionsArray, string, isGreaterThan, ">");
+            continue;
+        }
+        
+        char *isEqual = strstr(string, "=");
+        if (isEqual != NULL) {
+            explodeCondition(conditionsArray, string, isEqual, "=");
+            continue;
+        }
+        
+        appendToStringArray(conditionsArray, string);
+    }
+    
+    return conditionsArray;
+}
+
+Condition* createConditionsArray(int nbConditions)
+{
+    Condition *conditions = malloc(sizeof(Condition) * nbConditions);
+    
+    for (int i = 0; i < nbConditions; ++i) {
+        conditions[i].column = malloc(sizeof(char) * STRING_SIZE);
+        conditions[i].type = malloc(sizeof(char) * STRING_SIZE);
+        conditions[i].value = malloc(sizeof(char) * STRING_SIZE);
+        conditions[i].logicalOperator = malloc(sizeof(char) * STRING_SIZE);
+    }
+        return conditions;
+}
+
+void freeConditionsArray(Condition *conditions, int nbConditions)
+{
+    for (int i = 0; i < nbConditions; ++i) {
+        free(conditions[i].column);
+        free(conditions[i].type);
+        free(conditions[i].value);
+        free(conditions[i].logicalOperator);
+    }
+    
+    free(conditions);
 }

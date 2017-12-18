@@ -12,9 +12,10 @@
 #include "config.h"
 
 void showDatabases(void);
-Table findAllRecords(char* db_name, char* table_name);
-StringArray readColumnsName(FILE* f);
-StringArray readData(FILE* f);
+void showTables(Database database);
+Table findAllRecords(char *db_name, char *table_name);
+StringArray readColumnsName(FILE *f);
+StringArray readData(FILE *f);
 int filesFound(char *db_name, char *table_name, char *table_file);
 
 #endif

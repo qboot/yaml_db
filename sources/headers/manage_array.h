@@ -10,6 +10,7 @@
 
 #include "config.h"
 
+void trimComma(char *string);
 void trimSpaces(char *string);
 void trimLeadingSpaces(char *string);
 void trimTrailingSpaces(char *string);

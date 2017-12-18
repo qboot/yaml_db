@@ -221,7 +221,7 @@ void removeDir(const char *dirname)
 }
 
 //
-// Create a root directory named `dirname`
+// Create a root directory named `PROJECT` and a directory named `DB_FILENAME` inside it
 //
 void createRootDir()
 {

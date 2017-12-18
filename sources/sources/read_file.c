@@ -20,11 +20,13 @@
 #include "../headers/manage_array.h"
 #include "../headers/read_file.h"
 
-/**
- // read the name of all databases
-**/
+//
+// read the name of all databases
+//
 void showDatabases()
 {
+    StringArray *values = createStringArray();
+    
     char *databasePath = createFilePath(DB_FILENAME);
     FILE* file = fopen(databasePath, "r");
     if (file != NULL)
@@ -32,20 +34,74 @@ void showDatabases()
         char databaseName[STRING_SIZE];
         while (fgets(databaseName, STRING_SIZE, file) != NULL) {
             if (strstr(databaseName, TAB) != NULL) {
-                printf("%s", databaseName + 6);
+                appendToStringArray(values, databaseName + 6);
             }
         }
     }
     free(databasePath);
     fclose(file);
+    
+    printf("+-------------------------+\n");
+    printf("+      %d DATABASES        +\n", values->size);
+    printf("+-------------------------+\n");
+    for (int i = 0; i < values->size; ++i) {
+        trimSpaces(values->data[i]);
+        int spaces = (int) (24 - strlen(values->data[i]));
+        printf("+ %s", values->data[i]);
+        for (int j = 0; j < spaces; ++j) {
+            printf(" ");
+        }
+        printf("+\n");
+    }
+    printf("+-------------------------+\n");
+    
+    freeStringArray(values);
 }
 
-/**
- // Read the data for a given database name 'db_name'
- // and a 'name'
- // Return a Table
- **/
-Table findAllRecords(char* db_name, char* table_name)
+//
+// read the name of all databases
+//
+void showTables(Database database)
+{
+    StringArray *values = createStringArray();
+    
+    char *databasePath = createFilePath(database.name);
+    FILE* file = fopen(databasePath, "r");
+    if (file != NULL)
+    {
+        char databaseName[STRING_SIZE];
+        while (fgets(databaseName, STRING_SIZE, file) != NULL) {
+            if (strstr(databaseName, TAB) != NULL) {
+                appendToStringArray(values, databaseName + 6);
+            }
+        }
+    }
+    free(databasePath);
+    fclose(file);
+    
+    printf("+-------------------------+\n");
+    printf("+      %d TABLES           +\n", values->size);
+    printf("+-------------------------+\n");
+    for (int i = 0; i < values->size; ++i) {
+        trimSpaces(values->data[i]);
+        int spaces = (int) (24 - strlen(values->data[i]));
+        printf("+ %s", values->data[i]);
+        for (int j = 0; j < spaces; ++j) {
+            printf(" ");
+        }
+        printf("+\n");
+    }
+    printf("+-------------------------+\n");
+    
+    freeStringArray(values);
+}
+
+//
+// Read the data for a given database name 'db_name'
+// and a 'name'
+// Return a Table
+//
+Table findAllRecords(char *db_name, char *table_name)
 {
     char *table_file = createFilePath(table_name);
     char *db_file = createFilePath(db_name);
@@ -80,11 +136,11 @@ Table findAllRecords(char* db_name, char* table_name)
 }
 
 
-/**
- // Read the data in a given FILE* 'f'
- // and return an array of string with the column name
- **/
-StringArray readColumnsName(FILE* f)
+//
+// Read the data in a given FILE* 'f'
+// and return an array of string with the column name
+//
+StringArray readColumnsName(FILE *f)
 {
     
     StringArray columnsName = {
@@ -107,11 +163,11 @@ StringArray readColumnsName(FILE* f)
     return columnsName;
 }
 
-/**
- // Read the data in a given FILE* 'f'
- // and return an array of string with the records
- **/
-StringArray readData(FILE* f)
+//
+// Read the data in a given FILE* 'f'
+// and return an array of string with the records
+//
+StringArray readData(FILE *f)
 {
     
     StringArray data = {
@@ -135,12 +191,12 @@ StringArray readData(FILE* f)
     return data;
 }
 
-/**
- // Check if database file exists
- // if table is present in database
- // and if table file exists
- // Return 1 if all exists, else 0
- **/
+//
+// Check if database file exists
+// if table is present in database
+// and if table file exists
+// Return 1 if all exists, else 0
+//
 int filesFound(char *db_name, char *table_name, char *table_file)
 {
  
@@ -162,5 +218,3 @@ int filesFound(char *db_name, char *table_name, char *table_file)
     
     return 1;
 }
-
-
